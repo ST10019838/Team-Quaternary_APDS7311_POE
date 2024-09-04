@@ -1,4 +1,4 @@
-# Team-Quaternary_APDS7311_Part1
+# Team-Quaternary_APDS7311_POE
 
 ## Team Members
 - ST10019838 - Damian Dare
