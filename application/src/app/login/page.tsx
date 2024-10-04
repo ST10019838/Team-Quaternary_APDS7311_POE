@@ -4,11 +4,10 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -16,17 +15,22 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { AnyARecord } from "dns";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 const loginFormSchema = z.object({
   username: z
     .string({
-      required_error: "Name is required",
+      required_error: "Username is required",
     })
     .min(3, { message: "Must be 3 or more characters long" })
     .max(50, { message: "Must be 50 or fewer characters long" }),
+  accountnumber: z
+    .string({
+      required_error: "Account number is required",
+    })
+    .min(10, { message: "Must be 10 digits long" })
+    .max(10, { message: "Must be 10 digits long" }),
   password: z
     .string({
       required_error: "Password is required",
@@ -44,15 +48,11 @@ export default function LoginPage() {
 
   // Mutations
   const mutation = useMutation({
-    mutationFn: async ({ username, password }: LoginForm) => {
+    mutationFn: async ({ username, accountnumber, password }: LoginForm) => {
       try {
-        console.log("MUTATION", { username, password });
         const response = await axios.post(
           "http://localhost:5000/api/auth/login",
-          {
-            username,
-            password,
-          }
+          { username, accountnumber, password }
         );
         localStorage.setItem("token", response.data.token);
         router.push("/");
@@ -65,62 +65,97 @@ export default function LoginPage() {
       }
     },
     onSuccess: () => {
-      // Invalidate and refetch
       queryClient.invalidateQueries({ queryKey: ["todos"] });
     },
   });
 
-  // 1. Define the login form
   const form = useForm<z.infer<typeof loginFormSchema>>({
     resolver: zodResolver(loginFormSchema),
     defaultValues: {
       username: "",
+      accountnumber: "",
       password: "",
     },
   });
 
-  // 2. Define a submit handler.
   function onSubmit(values: z.infer<typeof loginFormSchema>) {
-    console.log(values);
     mutation.mutate(values);
   }
 
-  // 3. create the form
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <FormField
-          control={form.control}
-          name="username"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Username</FormLabel>
-              <FormControl>
-                <Input placeholder="shadcn" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+    <div className="flex min-h-screen items-center justify-center bg-gray-100">
+      <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-md shadow-lg">
+        <h2 className="text-center text-3xl font-extrabold text-gray-900">
+          Welcome back to Scammer get Scammed!
+        </h2>
 
-        <FormField
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Password</FormLabel>
-              <FormControl>
-                <Input placeholder="password" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <FormField
+              control={form.control}
+              name="username"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Username</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter your username" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-        {error && <span className="text-red-500">{error}</span>}
+            <FormField
+              control={form.control}
+              name="accountnumber"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Account Number</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter your account number" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-        <Button type="submit">Submit</Button>
-      </form>
-    </Form>
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Password</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="password"
+                      placeholder="Enter your password"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {error && <span className="text-red-500">{error}</span>}
+
+            <div>
+              <Button type="submit" className="w-full">
+                Sign In
+              </Button>
+            </div>
+          </form>
+        </Form>
+
+        <div className="text-center">
+          <p className="text-gray-600">
+            Don't have an account?{" "}
+            <a href="/register" className="text-blue-600 hover:underline">
+              Sign up
+            </a>
+          </p>
+        </div>
+      </div>
+    </div>
   );
 }
