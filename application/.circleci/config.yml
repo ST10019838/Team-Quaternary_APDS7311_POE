@@ -1,17 +1,40 @@
 version: 2.1
 orbs:
   node: circleci/node@5.1.1
+  sonarscanner: psl/sonarscanner@0.0.4  # Ensure this is enabled
+
 jobs:
-  build-and-test:
+  scan:
     docker:
-      - image: "cimg/base:stable"
+      - image: st10091991/apds7311poe2:latest  # Use your actual image
     steps:
       - checkout
-      - node/install
-      - node/install-packages
+      - setup_remote_docker:  # Removed version for flexibility
+          docker_layer_caching: true  # Optional
       - run:
-          command: npm run test
-workflows:
+          name: Login to Docker Hub
+          command: |
+            echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+      - run:
+          name: Install Sonarqube scanner 
+          command: |
+              sudo apt-get update
+              sudo apt-get install -y openjdk-11-jdk
+              wget -O sonar-scanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.6.2.2472-linux.zip
+              unzip sonar-scanner.zip
+              rm sonar-scanner.zip
+      - run:
+          name: Run Sonarscanner
+          command: |
+              export PATH="$PATH:$PWD/sonar-scanner-4.6.2.2472-linux/bin"
+              sonar-scanner \
+              -Dsonar.projectKey=$CIRCLE_BRANCH:$CIRCLE_PROJECT_REPONAME \
+              -Dsonar.host.url=https://sonarqube.com/ \
+              -Dsonar.login=$SONAR_TOKEN
+
+workflows: 
+  version: 2
   build-and-test:
     jobs:
-      - build-and-test
+      - scan:
+          context: sonarqube

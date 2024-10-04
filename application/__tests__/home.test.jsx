@@ -1,6 +1,6 @@
 import "@testing-library/jest-dom";
 import { render } from "@testing-library/react";
-import Home from "../app/page";  // Adjust the import if your Home component is in a different path
+import Home from "../src/app/page";  // Adjust the import if your Home component is in a different path
 
 describe("Home Page", () => {
   it("check for relevant text", () => {
