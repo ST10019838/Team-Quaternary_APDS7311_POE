@@ -1,17 +1,17 @@
-"use client";
+'use client';
 
-import Post from "@/models/Post";
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
+import Post from '@/models/Post';
+import { useQuery } from '@tanstack/react-query';
+import axios from 'axios';
 
 // axios.defaults.baseURL =
 
 export default function PostsPage() {
   // Queries
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["posts"],
+    queryKey: ['posts'],
     queryFn: async () => {
-      const { data } = await axios.get("http://localhost:5000/api/posts");
+      const { data } = await axios.get('http://localhost:5000/api/posts');
       return data;
     },
   });
