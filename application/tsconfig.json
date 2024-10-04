@@ -21,6 +21,21 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/server/server.js", "src/models/User.js", "src/models/Post.js", "src/models/LoginAttempt.js"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "src/server/server.js",
+    "src/models/User.js",
+    "src/models/Post.js",
+    "src/models/LoginAttempt.js",
+    "src/server/db/connection.js",
+    "src/server/middleware/authMiddleware.js",
+    "src/server/routes/auth.js",
+    "src/server/middleware/bruteForceProtectionMiddleware.js",
+    "src/server/routes/post.js",
+    "src/server/config.js"
+  ],
   "exclude": ["node_modules"]
 }

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
+import Link from "next/link";
+import Providers from "./providers";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -26,10 +28,45 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased `}
       >
-        {children}
+        <Providers>
+          <Navbar />
+          {children}
+        </Providers>
       </body>
     </html>
+  );
+}
+
+interface Route {
+  link: string;
+  title: string;
+}
+
+const routes: Route[] = [
+  {
+    link: "/",
+    title: "Home",
+  },
+  {
+    link: "/posts",
+    title: "Posts",
+  },
+  {
+    link: "/delete",
+    title: "Delete",
+  },
+];
+
+function Navbar() {
+  return (
+    <div className="flex w-full gap-3 bg-rose-500">
+      {/* {routes.map((route) => (
+        // <>
+        //   <Link key={route.title} href={route.link}>{route.title}</Link>
+        // </>
+      ))} */}
+    </div>
   );
 }

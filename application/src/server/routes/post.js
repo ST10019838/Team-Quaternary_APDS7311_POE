@@ -2,8 +2,6 @@ import express from "express";
 import Post from "../../models/Post.js";
 import authMiddleware from "../middleware/authMiddleware.js";
 
-
-
 const router = express.Router();
 
 // base route

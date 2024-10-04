@@ -5,12 +5,14 @@ const postSchema = new mongoose.Schema({
     type: String,
     required: true,
     unique: true,
+    match: [/^[a-zA-Z0-9\s]+$/, "Only alphanumeric characters and underscores"],
   },
   postImage: {
     type: String,
     required: false,
     trim: true,
     default: "https://www.trschools.com/templates/imgs/default_placeholder.png",
+    match: [/^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/, "invalid url"], // Basic URL pattern
   },
   content: {
     type: String,
