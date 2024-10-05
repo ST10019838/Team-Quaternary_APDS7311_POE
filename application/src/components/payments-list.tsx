@@ -5,11 +5,13 @@ import { Button } from './ui/button';
 import { toast } from 'sonner';
 import axios from '@/lib/axios';
 
-export default function PaymentsList() {
+export default function PaymentsList({ useAdmin }: { useAdmin?: boolean }) {
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: ['user-payments'],
+    queryKey: ['pending-payments'],
     queryFn: async () => {
-      const { data } = await axios.get('/payments');
+      const { data } = await axios.get(
+        useAdmin ? '/payments/pending' : '/payments'
+      );
       return data.reverse() as Payment[];
     },
   });
@@ -38,7 +40,11 @@ export default function PaymentsList() {
   return (
     <div className="w-full grid px-7 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-10 place-items-center pb-10">
       {data?.map((payment) => (
-        <PaymentsListItem key={payment._id} payment={payment} />
+        <PaymentsListItem
+          key={payment._id}
+          payment={payment}
+          useAdmin={useAdmin}
+        />
       ))}
     </div>
   );

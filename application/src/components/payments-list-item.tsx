@@ -1,4 +1,6 @@
-import Payment from '@/models/Payment';
+'use client';
+
+import Payment, { PaymentInsert } from '@/models/Payment';
 import {
   Card,
   CardContent,
@@ -23,8 +25,15 @@ import { cn } from '@/lib/utils';
 import PaymentDialog from './payment-dialog';
 import DeletePaymentDialog from './delete-payment-dialog';
 import { format } from 'date-fns';
+import PaymentVerificationDialog from './payment-verification-dialog';
 
-export default function PaymentsListItem({ payment }: { payment: Payment }) {
+export default function PaymentsListItem({
+  payment,
+  useAdmin,
+}: {
+  payment: Payment;
+  useAdmin?: boolean;
+}) {
   return (
     <Card className="w-full max-w-sm ">
       <CardHeader>
@@ -105,7 +114,19 @@ export default function PaymentsListItem({ payment }: { payment: Payment }) {
             payment.isVerificationPending && 'flex flex-col gap-3'
           )}
         >
-          {payment.isVerificationPending ? (
+          {useAdmin ? (
+            <div className="flex gap-2 w-full">
+              <PaymentVerificationDialog
+                payment={payment}
+                verifyPayment={false}
+              />
+
+              <PaymentVerificationDialog
+                payment={payment}
+                verifyPayment={true}
+              />
+            </div>
+          ) : payment.isVerificationPending ? (
             <>
               <Badge className="flex w-full py-1 px-3 gap-2 items-center justify-center text-white">
                 <Clock />

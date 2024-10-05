@@ -1,25 +1,6 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
 import axios from '@/lib/axios';
-import { z } from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import {
   Dialog,
   DialogClose,
@@ -31,16 +12,11 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 
-import { Input } from '@/components/ui/input';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { AnyARecord } from 'dns';
 import { ReactNode, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
-import Payment, { currencies, paymentProviders } from '@/models/Payment';
-import { Regex, Trash2 } from 'lucide-react';
-import { Separator } from './ui/separator';
+import Payment from '@/models/Payment';
+import { Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 export default function DeletePaymentDialog({

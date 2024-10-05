@@ -16,6 +16,15 @@ router.get('/', async (req, res) => {
   }
 });
 
+router.get('/pending', async (req, res) => {
+  try {
+    const posts = await Payment.find({ isVerificationPending: true }).exec();
+    res.json(posts);
+  } catch (error) {
+    res.status(500).json({ message: 'Internal Server error', error });
+  }
+});
+
 // create
 router.post('/create', async (req, res) => {
   const {
@@ -92,8 +101,10 @@ router.put('/:id', async (req, res) => {
   } = req.body;
 
   // Need to add verfication changes aswell
-  if (!isVerificationPending)
-    return res.status(400).json({ message: 'Cannot update the Payment' });
+  if (/* user is not an admin */ false) {
+    if (!isVerificationPending)
+      return res.status(400).json({ message: 'Cannot update the Payment' });
+  }
 
   if (
     !paymentAmount &&
@@ -103,7 +114,8 @@ router.put('/:id', async (req, res) => {
     !senderAccountNumber &&
     !recipientAccountNumber &&
     !paymentCode &&
-    !isVerified
+    !isVerified &&
+    !isVerificationPending
   ) {
     return res
       .status(400)
@@ -121,14 +133,18 @@ router.put('/:id', async (req, res) => {
     updatedFields.recipientAccountNumber = recipientAccountNumber;
   if (paymentCode) updatedFields.paymentCode = paymentCode;
   if (isVerified) updatedFields.isVerified = isVerified;
-  if (isVerificationPending)
+  if (isVerificationPending !== null)
     updatedFields.isVerificationPending = isVerificationPending;
+
+  // if(admin logged in){
+  // updatedFields.verifiedBy = ADMIN
+  // }
 
   try {
     const updatedPayment = await Payment.findByIdAndUpdate(
       req.params.id,
       updatedFields,
-      { new: true }
+      { new: false }
     );
 
     if (!updatedPayment) {

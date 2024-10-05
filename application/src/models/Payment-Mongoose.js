@@ -40,7 +40,16 @@ const paymentSchema = new mongoose.Schema({
     required: true,
     default: false,
   },
-  isVerificationPending: { type: Boolean, required: true, default: true },
+  isVerificationPending: {
+    type: Boolean,
+    required: true,
+    default: true,
+  },
+  verifiedBy: {
+    type: String,
+    required: false,
+    default: null,
+  },
 
   // title: {
   //   type: String,
