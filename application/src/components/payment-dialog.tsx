@@ -47,6 +47,7 @@ import { Regex } from 'lucide-react';
 import { Separator } from './ui/separator';
 import { toast } from 'sonner';
 import { useToast } from '@/hooks/use-toast';
+import { getSession } from '@/lib/session';
 
 const paymentFormSchema = z.object({
   paymentAmount: z.coerce
@@ -84,8 +85,8 @@ const paymentFormSchema = z.object({
       required_error: 'Recipient Account Number is required',
     })
     .regex(new RegExp(/^\d+$/), { message: 'Must be a number' })
-    .min(9, { message: 'Must be 9 or more characters long' }) // More than a 9 digit number
-    .max(12, { message: 'Must be 12 or fewer characters long' }), // Less than a 12 digit number
+    .min(9, { message: 'Must be 9 or more digits long' }) // More than a 9 digit number
+    .max(12, { message: 'Must be 12 or fewer digits long' }), // Less than a 12 digit number
 
   paymentCode: z
     .string({
@@ -118,13 +119,15 @@ export default function PaymentDialog({
   const mutation = useMutation({
     mutationFn: async (paymentForm: PaymentForm) => {
       try {
+        const session = await getSession();
+
         // Set details to credentials of user logged in
         const paymentDetails: PaymentInsert = {
           paymentAmount: paymentForm.paymentAmount,
           currency: paymentForm.currency,
           paymentProvider: paymentForm.paymentProvider,
-          senderIdNumber: 1223,
-          senderAccountNumber: 1223123,
+          senderIdNumber: session.idNumber,
+          senderAccountNumber: session.accountNumber,
           recipientAccountNumber: parseInt(paymentForm.recipientAccountNumber),
           paymentCode: paymentForm.paymentCode,
 

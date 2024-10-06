@@ -9,8 +9,8 @@ const router = express.Router();
 // base route
 router.get('/', async (req, res) => {
   try {
-    const posts = await Payment.find();
-    res.json(posts);
+    const payments = await Payment.find();
+    res.json(payments.reverse()); // reverses list to show newest payments first
   } catch (error) {
     res.status(500).json({ message: 'Internal Server error', error });
   }
@@ -18,10 +18,28 @@ router.get('/', async (req, res) => {
 
 router.get('/pending', async (req, res) => {
   try {
-    const posts = await Payment.find({ isVerificationPending: true }).exec();
-    res.json(posts);
+    const payments = await Payment.find({ isVerificationPending: true }).exec();
+    res.json(payments.reverse()); // reverses list to show newest payments first
   } catch (error) {
     res.status(500).json({ message: 'Internal Server error', error });
+  }
+});
+
+// get by id
+router.get('/:accountNumber', async (req, res) => {
+  try {
+    const payments = await Payment.find({
+      senderAccountNumber: req.params.accountNumber,
+    }).exec();
+
+    if (!payments) {
+      return res.status(404).json({ message: 'Payments not found' });
+    }
+
+    return res.json(payments.reverse()); // reverses list to show newest payments first
+  } catch (err) {
+    console.error('Error getting payments', err);
+    res.status(500).json({ message: 'Server error', error: err });
   }
 });
 
@@ -66,22 +84,6 @@ router.post('/create', async (req, res) => {
   } catch (error) {
     console.error('Error saving payment', err);
     res.status(500).json({ message: 'Server error', error });
-  }
-});
-
-// get by id
-router.get('/:id', async (req, res) => {
-  try {
-    const post = await Post.findById(req.params.id);
-
-    if (!post) {
-      return res.status(404).json({ message: 'Post not found' });
-    }
-
-    return res.json(post);
-  } catch (err) {
-    console.error('Error getting post', err);
-    res.status(500).json({ message: 'Server error', error: err });
   }
 });
 

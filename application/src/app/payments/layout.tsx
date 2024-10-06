@@ -1,3 +1,4 @@
+import AccountDetails from '@/components/account-details';
 import PaymentDialog from '@/components/payment-dialog';
 import { Separator } from '@/components/ui/separator';
 
@@ -16,7 +17,7 @@ export default function CustomerLayout({
           <PaymentDialog />
         </span>
         <span className="col-start-2 sm:col-start-3 row-start-1 text-sm sm:text-lg justify-self-end sm:justify-self-center">
-          Account
+          <AccountDetails />
         </span>
       </div>
 

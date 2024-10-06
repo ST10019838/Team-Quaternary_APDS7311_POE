@@ -4,15 +4,18 @@ import PaymentsListItem from './payments-list-item';
 import { Button } from './ui/button';
 import { toast } from 'sonner';
 import axios from '@/lib/axios';
+import { getSession } from '@/lib/session';
 
 export default function PaymentsList({ useAdmin }: { useAdmin?: boolean }) {
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: ['pending-payments'],
+    queryKey: [useAdmin ? 'pending-payments' : 'user-payments'],
     queryFn: async () => {
+      const session = await getSession();
+
       const { data } = await axios.get(
-        useAdmin ? '/payments/pending' : '/payments'
+        useAdmin ? '/payments/pending' : `/payments/${session.accountNumber}`
       );
-      return data.reverse() as Payment[];
+      return data as Payment[];
     },
   });
 

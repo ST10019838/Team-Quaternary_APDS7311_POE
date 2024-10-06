@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { Button } from "@/components/ui/button";
-import axios from "axios";
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { Button } from '@/components/ui/button';
+
 import {
   Form,
   FormControl,
@@ -12,69 +12,74 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import axios from '@/lib/axios';
+import { saveSession } from '@/lib/session';
+import { Session } from '@/models/Session';
 
 const loginFormSchema = z.object({
   username: z
     .string({
-      required_error: "Username is required",
+      required_error: 'Username is required',
     })
-    .min(3, { message: "Must be 3 or more characters long" })
-    .max(50, { message: "Must be 50 or fewer characters long" }),
-  accountnumber: z
-    .string({
-      required_error: "Account number is required",
-    })
-    .min(10, { message: "Must be 10 digits long" })
-    .max(10, { message: "Must be 10 digits long" }),
-  password: z
-    .string({
-      required_error: "Password is required",
-    })
-    .min(8, { message: "Must be 8 or more characters long" })
-    .max(50, { message: "Must be 50 or fewer characters long" }),
+    .min(3, { message: 'Must be 3 or more characters long' })
+    .max(50, { message: 'Must be 50 or fewer characters long' }),
+  accountNumber: z.string({
+    required_error: 'Account number is required',
+  }),
+  // .min(10, { message: 'Must be 10 digits long' })
+  // .max(10, { message: 'Must be 10 digits long' })
+  password: z.string({
+    required_error: 'Password is required',
+  }),
+  // .min(8, { message: 'Must be 8 or more characters long' })
+  // .max(50, { message: 'Must be 50 or fewer characters long' }),
 });
 
 type LoginForm = z.infer<typeof loginFormSchema>;
 
 export default function LoginPage() {
   const queryClient = useQueryClient();
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
   const router = useRouter();
 
   // Mutations
   const mutation = useMutation({
-    mutationFn: async ({ username, accountnumber, password }: LoginForm) => {
+    mutationFn: async ({ username, accountNumber, password }: LoginForm) => {
       try {
-        const response = await axios.post(
-          "http://localhost:5000/api/auth/login",
-          { username, accountnumber, password }
-        );
-        localStorage.setItem("token", response.data.token);
-        router.push("/");
+        const { data }: { data: Session } = await axios.post('/auth/login', {
+          username,
+          accountNumber,
+          password,
+        });
+
+        saveSession(data);
+
+        // localStorage.setItem('token', data.data.token);
+        router.push(data.isAdmin ? '/admin/payments' : '/payments');
       } catch (err: any) {
         if (err.response) {
           setError(err.response.data.message);
         } else {
-          setError("Something went wrong. Please try again.");
+          setError('Something went wrong. Please try again.');
         }
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["todos"] });
+      queryClient.invalidateQueries({ queryKey: ['todos'] });
     },
   });
 
   const form = useForm<z.infer<typeof loginFormSchema>>({
     resolver: zodResolver(loginFormSchema),
     defaultValues: {
-      username: "",
-      accountnumber: "",
-      password: "",
+      username: '',
+      accountNumber: '',
+      password: '',
     },
   });
 
@@ -107,7 +112,7 @@ export default function LoginPage() {
 
             <FormField
               control={form.control}
-              name="accountnumber"
+              name="accountNumber"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Account Number</FormLabel>
@@ -149,7 +154,7 @@ export default function LoginPage() {
 
         <div className="text-center">
           <p className="text-gray-600">
-            Don't have an account?{" "}
+            Don't have an account?{' '}
             <a href="/register" className="text-blue-600 hover:underline">
               Sign up
             </a>

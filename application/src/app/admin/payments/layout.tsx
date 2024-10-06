@@ -1,3 +1,4 @@
+import AccountDetails from '@/components/account-details';
 import { Separator } from '@/components/ui/separator';
 
 export default function AdminPaymentsLayout({
@@ -12,7 +13,7 @@ export default function AdminPaymentsLayout({
           Pending Payments
         </span>
         <span className="col-start-2 sm:col-start-3 row-start-1 text-sm sm:text-lg justify-self-end sm:justify-self-center">
-          Admin Account
+          <AccountDetails />
         </span>
       </div>
 
