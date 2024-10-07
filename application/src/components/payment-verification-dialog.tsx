@@ -19,6 +19,7 @@ import Payment, { PaymentInsert } from '@/models/Payment';
 import { ShieldCheck, ShieldX, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
+import { getSession } from '@/lib/session';
 
 export default function PaymentVerificationDialog({
   payment,
@@ -35,6 +36,8 @@ export default function PaymentVerificationDialog({
   // // Mutations
   const mutation = useMutation({
     mutationFn: async () => {
+      const session = await getSession();
+
       try {
         const paymentDetails: PaymentInsert = {
           paymentAmount: payment.paymentAmount,
@@ -51,7 +54,15 @@ export default function PaymentVerificationDialog({
           createdAt: payment?.createdAt,
         };
 
-        await axios.put(`/payments/${payment._id}`, paymentDetails);
+        await axios.post(
+          `/payments/${verifyPayment ? 'verify' : 'deny'}/${payment._id}`,
+          paymentDetails,
+          {
+            headers: {
+              Authorization: `Bearer ${session.token}`,
+            },
+          }
+        );
 
         setIsDialogOpen(false);
 

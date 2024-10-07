@@ -13,7 +13,13 @@ export default function PaymentsList({ useAdmin }: { useAdmin?: boolean }) {
       const session = await getSession();
 
       const { data } = await axios.get(
-        useAdmin ? '/payments/pending' : `/payments/${session.accountNumber}`
+        useAdmin ? '/payments/pending' : `/payments/${session.accountNumber}`,
+        {
+          headers: {
+            Authorization: `Bearer ${session.token}`,
+          },
+          // withCredentials: true,
+        }
       );
       return data as Payment[];
     },

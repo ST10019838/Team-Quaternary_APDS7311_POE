@@ -4,7 +4,6 @@ const userSchema = new mongoose.Schema({
   fullname: {
     type: String,
     required: true,
-    unique: true,
     trim: true,
     match: [
       // The following regex was taken from stackoverflow.com

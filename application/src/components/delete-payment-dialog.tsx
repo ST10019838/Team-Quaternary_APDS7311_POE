@@ -18,6 +18,7 @@ import { Button } from '@/components/ui/button';
 import Payment from '@/models/Payment';
 import { Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { getSession } from '@/lib/session';
 
 export default function DeletePaymentDialog({
   payment,
@@ -34,8 +35,13 @@ export default function DeletePaymentDialog({
   // // Mutations
   const mutation = useMutation({
     mutationFn: async () => {
+      const session = await getSession();
+
       try {
         const response = await axios.delete(`/payments/${payment._id}`, {
+          headers: {
+            Authorization: `Bearer ${session.token}`,
+          },
           data: {
             isVerificationPending: payment.isVerificationPending,
           },

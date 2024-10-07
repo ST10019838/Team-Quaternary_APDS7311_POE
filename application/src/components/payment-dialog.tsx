@@ -137,9 +137,17 @@ export default function PaymentDialog({
         };
 
         if (payment) {
-          await axios.put(`/payments/${payment._id}`, paymentDetails);
+          await axios.put(`/payments/${payment._id}`, paymentDetails, {
+            headers: {
+              Authorization: `Bearer ${session.token}`,
+            },
+          });
         } else {
-          await axios.post('/payments/create', paymentDetails);
+          await axios.post('/payments/create', paymentDetails, {
+            headers: {
+              Authorization: `Bearer ${session.token}`,
+            },
+          });
         }
 
         setIsDialogOpen(false);
