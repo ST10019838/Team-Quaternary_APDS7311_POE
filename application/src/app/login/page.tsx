@@ -26,16 +26,25 @@ const loginFormSchema = z.object({
     .string({
       required_error: 'Username is required',
     })
+    .regex(new RegExp(/^[a-zA-Z0-9_]+$/), {
+      message:
+        'Only alphanumric characters and underscores are allowed. No spaces are allowed either.',
+    })
     .min(3, { message: 'Must be 3 or more characters long' })
     .max(50, { message: 'Must be 50 or fewer characters long' }),
-  accountNumber: z.string({
-    required_error: 'Account number is required',
-  }),
-  // .min(10, { message: 'Must be 10 digits long' })
-  // .max(10, { message: 'Must be 10 digits long' })
-  password: z.string({
-    required_error: 'Password is required',
-  }),
+  accountNumber: z
+    .string({
+      required_error: 'Account number is required',
+    })
+    .regex(new RegExp(/^\d+$/), { message: 'Must be a number' })
+    .min(9, { message: 'Must be 9 or more digits long' }) // More than a 9 digit number
+    .max(12, { message: 'Must be 12 or fewer digits long' }), // Less than a 12 digit number,
+  password: z
+    .string({
+      required_error: 'Password is required',
+    })
+    .min(8, { message: 'Must be 8 or more characters long' })
+    .max(50, { message: 'Must be 50 or fewer characters long' }),
   // .min(8, { message: 'Must be 8 or more characters long' })
   // .max(50, { message: 'Must be 50 or fewer characters long' }),
 });
@@ -57,7 +66,7 @@ export default function LoginPage() {
           password,
         });
 
-        saveSession(data);
+        await saveSession(data);
 
         // localStorage.setItem('token', data.data.token);
         router.push(data.isAdmin ? '/admin/payments' : '/payments');

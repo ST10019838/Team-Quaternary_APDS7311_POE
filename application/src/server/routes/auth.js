@@ -8,14 +8,20 @@ const router = express.Router();
 const JWT_SECRET = process.env.JWT_SECRET;
 
 // base route
-router.get('/', (req, res) => {
-  res.send('Hello Auth World');
-});
+// router.get('/', (req, res) => {
+//   res.send('Hello Auth World');
+// });
 
 // register
 router.post('/register', bruteForce.prevent, async (req, res) => {
   try {
     const { fullname, username, idNumber, accountNumber, password } = req.body;
+
+    if (!fullname || !username || !idNumber || !accountNumber || !password) {
+      return res
+        .status(488)
+        .json({ message: 'Insufficient credentials to create a user' });
+    }
 
     //check if the user already exisits
     const existingUser = await User.findOne({
