@@ -5,24 +5,31 @@ import { Button } from './ui/button';
 import { toast } from 'sonner';
 import axios from '@/lib/axios';
 import { getSession } from '@/lib/session';
+import { useRouter } from 'next/navigation';
 
 export default function PaymentsList({ useAdmin }: { useAdmin?: boolean }) {
+  const router = useRouter();
+
   const { data, isLoading, isError, error } = useQuery({
     queryKey: [useAdmin ? 'pending-payments' : 'user-payments'],
     queryFn: async () => {
       const session = await getSession();
 
+      if (session === null) router.push('/login');
+
       const { data } = await axios.get(
-        useAdmin ? '/payments/pending' : `/payments/${session.accountNumber}`,
+        useAdmin ? '/payments/pending' : `/payments/${session?.accountNumber}`,
         {
           headers: {
-            Authorization: `Bearer ${session.token}`,
+            Authorization: `Bearer ${session?.token}`,
           },
           // withCredentials: true,
         }
       );
       return data as Payment[];
     },
+    refetchInterval: 1000 * 60 * 2, // refetch every 2 mins
+    refetchIntervalInBackground: false,
   });
 
   if (isLoading)

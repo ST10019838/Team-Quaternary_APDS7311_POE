@@ -151,9 +151,9 @@ export default function LoginPage() {
               )}
             />
 
-            {error && <span className="text-red-500">{error}</span>}
+            <div className="flex flex-col items-center gap-2">
+              {error && <span className="text-red-500">{error}</span>}
 
-            <div>
               <Button type="submit" className="w-full">
                 Sign In
               </Button>

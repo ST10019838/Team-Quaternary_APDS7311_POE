@@ -20,6 +20,7 @@ import { ShieldCheck, ShieldX, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { getSession } from '@/lib/session';
+import { useRouter } from 'next/navigation';
 
 export default function PaymentVerificationDialog({
   payment,
@@ -32,11 +33,14 @@ export default function PaymentVerificationDialog({
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [error, setError] = useState('');
+  const router = useRouter();
 
   // // Mutations
   const mutation = useMutation({
     mutationFn: async () => {
       const session = await getSession();
+
+      if (session === null) router.push('/login');
 
       try {
         const paymentDetails: PaymentInsert = {
@@ -59,7 +63,7 @@ export default function PaymentVerificationDialog({
           paymentDetails,
           {
             headers: {
-              Authorization: `Bearer ${session.token}`,
+              Authorization: `Bearer ${session?.token}`,
             },
           }
         );
@@ -121,7 +125,7 @@ export default function PaymentVerificationDialog({
               )}
             >
               {verifyPayment ? 'verify' : 'deny'}
-            </span>{' '}
+            </span>
             this payment?
           </span>
 

@@ -11,8 +11,8 @@ import authRoutes from './routes/auth.js';
 import postRoutes from './routes/post.js';
 import paymentRoutes from './routes/payment.js';
 
-// import "src/server/keys/privatekey.pem";
-// import "./keys/certificate.pem";
+// import 'src/server/keys/privatekey.pem';
+// import './keys/certificate.pem';
 
 const dev = process.env.NODE_ENV !== 'production';
 // const app = next({ dev });
@@ -38,19 +38,26 @@ server.get('/api/ben/dover', (req, res) => {
 });
 
 // SSL Certificate and Key
+// Self signed version
 // const options = {
-//   key: fs.readFileSync("src/server/keys/privatekey.pem"),
-//   cert: fs.readFileSync("src/server/keys/certificate.pem"),
+//   key: fs.readFileSync('src/server/keys/privatekey.pem'),
+//   cert: fs.readFileSync('src/server/keys/certificate.pem'),
 // };
 
-// https.createServer(options, server).listen(process.env.PORT, (err) => {
-//   if (err) throw err;
-//   console.log(`> Ready on https://localhost:${process.env.PORT}`);
-// });
+// nextjs generated
+const options = {
+  key: fs.readFileSync('certificates/localhost-key.pem'),
+  cert: fs.readFileSync('certificates/localhost.pem'),
+};
 
-server.listen(process.env.PORT, () => {
-  console.log(`Server is running on port ${process.env.PORT}`);
+https.createServer(options, server).listen(process.env.PORT, (err) => {
+  if (err) throw err;
+  console.log(`> Ready on https://localhost:${process.env.PORT}`);
 });
+
+// server.listen(process.env.PORT, () => {
+//   console.log(`Server is running on port ${process.env.PORT}`);
+// });
 
 // Connecting the application to Nextjs
 // app.prepare().then(() => {

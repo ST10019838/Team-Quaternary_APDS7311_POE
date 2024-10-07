@@ -26,7 +26,9 @@ export default function AccountDetails() {
 
         const session = await getSession();
 
-        setCurrentSession(() => session);
+        if (session === null) router.push('/login');
+
+        setCurrentSession(() => session!);
       }}
     >
       <DropdownMenuTrigger asChild>

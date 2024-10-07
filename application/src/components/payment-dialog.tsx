@@ -114,6 +114,7 @@ export default function PaymentDialog({
   const [error, setError] = useState<string>('');
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
   const { toast } = useToast();
+  const router = useRouter();
 
   // Mutations
   const mutation = useMutation({
@@ -121,13 +122,15 @@ export default function PaymentDialog({
       try {
         const session = await getSession();
 
+        if (session === null) router.push('/login');
+
         // Set details to credentials of user logged in
         const paymentDetails: PaymentInsert = {
           paymentAmount: paymentForm.paymentAmount,
           currency: paymentForm.currency,
           paymentProvider: paymentForm.paymentProvider,
-          senderIdNumber: session.idNumber,
-          senderAccountNumber: session.accountNumber,
+          senderIdNumber: session?.idNumber!,
+          senderAccountNumber: session?.accountNumber!,
           recipientAccountNumber: parseInt(paymentForm.recipientAccountNumber),
           paymentCode: paymentForm.paymentCode,
 
@@ -139,13 +142,13 @@ export default function PaymentDialog({
         if (payment) {
           await axios.put(`/payments/${payment._id}`, paymentDetails, {
             headers: {
-              Authorization: `Bearer ${session.token}`,
+              Authorization: `Bearer ${session?.token}`,
             },
           });
         } else {
           await axios.post('/payments/create', paymentDetails, {
             headers: {
-              Authorization: `Bearer ${session.token}`,
+              Authorization: `Bearer ${session?.token}`,
             },
           });
         }

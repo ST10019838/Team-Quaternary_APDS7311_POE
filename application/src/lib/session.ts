@@ -15,11 +15,15 @@ export async function saveSession(session: Session) {
     name: 'session',
     value: JSON.stringify(session),
     httpOnly: true,
+    secure: true,
+    maxAge: 60 * 60 * 2, //2 hour duration,
+    sameSite: 'strict',
+    domain: 'localhost',
   });
 }
 
-export async function getSession(): Promise<Session> {
-  // if (!cookies().has('session')) return null;
+export async function getSession(): Promise<Session | null> {
+  if (!cookies().has('session')) return null;
 
   const sessionCookie = cookies().get('session');
 
