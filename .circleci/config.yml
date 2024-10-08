@@ -8,19 +8,16 @@ executors:
   sonar-executor:
     docker:
       - image: circleci/node:16
-    working_directory: ~/project/application
+    working_directory: ~/project/application  # Ensure this points to the correct folder
 
 jobs:
   test:
     executor: sonar-executor
     steps:
-      - checkout
+      - checkout  # This checks out the code into the working directory
       - run:
           name: Install dependencies
-          command: npm install
-      - run:
-          name: Run Tests
-          command: npm test -- --watchAll=false
+          command: npm install  # Ensure package.json is present
 
   sonar_scan:
     executor: sonar-executor
@@ -50,8 +47,7 @@ jobs:
     environment:
       JEST_JUNIT_OUTPUT_DIR: ./test-results/
     steps:
-      - checkout:
-          path: ~/project
+      - checkout
       - node/install-packages:
           pkg-manager: npm
       - run:
@@ -66,8 +62,7 @@ jobs:
     executor: node/default
     working_directory: ~/project/application
     steps:
-      - checkout:
-          path: ~/project
+      - checkout
       - node/install-packages:
           pkg-manager: npm
       - run:
@@ -89,11 +84,11 @@ jobs:
       - checkout
       - run:
           name: Install dependencies
-          command: npm install
+          command: npm install  # Ensure package.json is present
       - sonarcloud/scan
 
 workflows:
-  build-and-test:  # Unique workflow
+  build-and-test:
     jobs:
       - test-node
       - build-node:
@@ -103,6 +98,6 @@ workflows:
           requires:
             - build-node
 
-  build-and-deploy:  # Ensure this workflow has a unique name
+  build-and-deploy:
     jobs:
       - build
