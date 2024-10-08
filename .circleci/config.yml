@@ -7,7 +7,7 @@ orbs:
 executors:
   sonar-executor:
     docker:
-      - image: circleci/openjdk:11-jdk  # Updated to a valid version
+      - image: circleci/node:14  # Use a Node.js image with npm
     working_directory: ~/project/application
 
 jobs:
@@ -18,7 +18,7 @@ jobs:
       - checkout
       - run:
           name: Install dependencies
-          command: cd application && npm install
+          command: npm install  # npm should be available
       - run:
           name: Run Tests
           command: npm test -- --watchAll=false
