@@ -107,6 +107,20 @@ workflows:
       - sonar_scan:
           requires:
             - build-node  # Ensure sonar_scan runs after build-node
+
+  # New workflow
+  build-and-deploy:
+    jobs:
+      - build
+  build-and-test:
+    jobs:
+      - test-node
+      - build-node:
+          requires:
+            - test-node
+      - sonar_scan:
+          requires:
+            - build-node  # Ensure sonar_scan runs after build-node
   build-and-test:
     jobs:
       - test-node
