@@ -98,24 +98,15 @@ jobs:
       - sonarcloud/scan
 
 workflows:
-  build-and-test:
+  build-and-test-react:
     jobs:
       - test-node
       - build-node:
-          requires:
-            - test-node
-      - sonar_scan:
           requires:
             - test-node
 
-  build-and-test:
+  build-and-analyze:
     jobs:
-      - test-node
-      - build-node:
-          requires:
-            - test-node
       - sonar_scan:
           requires:
-            - build-node
-      - build:
-          context: sonarcloud
+            - test-node
