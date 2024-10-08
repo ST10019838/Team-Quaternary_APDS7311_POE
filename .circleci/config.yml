@@ -7,7 +7,7 @@ orbs:
 executors:
   sonar-executor:
     docker:
-      - image: circleci/node:14  # Use a Node.js image with npm
+      - image: circleci/node:16  # Use a Node.js image with npm
     working_directory: ~/project/application
 
 jobs:
@@ -98,6 +98,15 @@ jobs:
       - sonarcloud/scan
 
 workflows:
+  build-and-test:
+    jobs:
+      - test-node
+      - build-node:
+          requires:
+            - test-node
+      - sonar_scan:
+          requires:
+            - build-node  # Ensure sonar_scan runs after build-node
   build-and-test:
     jobs:
       - test-node
