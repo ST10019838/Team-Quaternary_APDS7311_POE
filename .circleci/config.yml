@@ -18,7 +18,7 @@ jobs:
           command: cd application && npm install
       - run:
           name: Run Tests
-          command: npm test -- --watchAll=false
+          command: npm run test
 
   # Job to run SonarCloud analysis
   sonar_scan:
