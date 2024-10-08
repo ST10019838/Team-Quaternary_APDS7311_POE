@@ -11,7 +11,7 @@
     "start": "next start",
     "lint": "next lint",
     "server": "src/server/server.js",
-    "devServer": "nodemon src/server/server.js",
+    "dev-server": "nodemon src/server/server.js",
     "test": "jest"
   },
   "dependencies": {
