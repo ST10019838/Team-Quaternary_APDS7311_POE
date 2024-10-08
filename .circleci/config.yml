@@ -1,6 +1,7 @@
 version: 2.1
 orbs:
   node: circleci/node@5
+  sonarcloud: sonarsource/sonarcloud@2.0.0
 jobs:
   # Job to run tests for the React app
   test:
@@ -73,6 +74,14 @@ jobs:
           path: ~/artifacts
           destination: node-build
 
+  build:
+      docker:
+        - image: node:latest
+      steps:
+        - checkout
+        - sonarcloud/scan
+
+
 workflows:
   build-and-test:
     jobs:
@@ -80,3 +89,5 @@ workflows:
       - build-node:
           requires:
             - test-node
+      - build:
+          context: sonarcloud
