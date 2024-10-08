@@ -31,10 +31,10 @@ jobs:
           command: |
             npx sonar-scanner \
             -Dsonar.projectKey=ST10019838_Team-Quaternary_APDS7311_POE \
+            -Dsonar.organization=st10019838 \
             -Dsonar.sources=src \
             -Dsonar.host.url=https://sonarcloud.io/ \
-            -Dsonar.login=$SONAR_TOKEN \
-            -Dsonar.organization=st10019838
+            -Dsonar.login=$SONAR_TOKEN
 
   test-node:
     executor: node/default
@@ -75,12 +75,26 @@ jobs:
           destination: node-build
 
   build:
-      docker:
-        - image: node:latest
-      steps:
-        - checkout
-        - sonarcloud/scan
-
+    docker:
+      - image: node:latest
+    steps:
+      - checkout
+      - run:
+        name: Navigate to app folder
+        command: cd application
+      - run:
+          name: Install SonarQube Scanner via npm
+          command: npm install sonarqube-scanner --save-dev
+      - run:
+          name: Run SonarCloud Analysis
+          command: |
+            npx sonar-scanner \
+            -Dsonar.projectKey=ST10019838_Team-Quaternary_APDS7311_POE \
+            -Dsonar.organization=st10019838 \
+            -Dsonar.sources=src \
+            -Dsonar.host.url=https://sonarcloud.io/ \
+            -Dsonar.login=$SONAR_TOKEN
+      - sonarcloud/scan
 
 workflows:
   build-and-test:
