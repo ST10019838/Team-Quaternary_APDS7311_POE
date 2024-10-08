@@ -7,23 +7,21 @@ orbs:
 executors:
   sonar-executor:
     docker:
-      - image: circleci/node:16  # Use a Node.js image with npm
+      - image: circleci/node:16
     working_directory: ~/project/application
 
 jobs:
-  # Job to run tests for the React app
   test:
     executor: sonar-executor
     steps:
       - checkout
       - run:
           name: Install dependencies
-          command: npm install  # npm should be available
+          command: npm install
       - run:
           name: Run Tests
           command: npm test -- --watchAll=false
 
-  # Job to run SonarCloud analysis
   sonar_scan:
     executor: sonar-executor
     steps:
@@ -46,7 +44,6 @@ jobs:
             -Dsonar.java.binaries=./build \
             -X
 
-  # Job to test the Node.js app
   test-node:
     executor: node/default
     working_directory: ~/project/application
@@ -65,7 +62,6 @@ jobs:
       - store_test_results:
           path: ./test-results/
 
-  # Job to build the Node.js app
   build-node:
     executor: node/default
     working_directory: ~/project/application
@@ -86,7 +82,6 @@ jobs:
           path: ~/artifacts
           destination: node-build
 
-  # Job to build and analyze with SonarCloud
   build:
     docker:
       - image: node:latest
@@ -98,6 +93,20 @@ jobs:
       - sonarcloud/scan
 
 workflows:
+  build-and-test:
+    jobs:
+      - test-node
+      - build-node:
+          requires:
+            - test-node
+      - sonar_scan:
+          requires:
+            - build-node
+
+  build-and-deploy:
+    jobs:
+      - build
+
   build-and-test:
     jobs:
       - test-node
