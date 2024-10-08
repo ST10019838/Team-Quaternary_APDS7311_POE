@@ -8,7 +8,6 @@ import https from 'https';
 import fs from 'fs';
 import connectDB from './db/connection.js';
 import authRoutes from './routes/auth.js';
-import postRoutes from './routes/post.js';
 import paymentRoutes from './routes/payment.js';
 
 // import 'src/server/keys/privatekey.pem';
@@ -25,12 +24,11 @@ connectDB();
 // Middleware
 server.use(express.json());
 server.use(helmet()); // Adds security-related HTTP headers
-server.use(cors({ origin: 'https://localhost:3000' })); // Configures CORS
+server.use(cors({ origin: 'https://localhost:3000', credentials: true })); // Configures CORS
 server.use(morgan('combined'));
 
 // Routes
 server.use('/api/auth', authRoutes);
-server.use('/api/posts', postRoutes);
 server.use('/api/payments', paymentRoutes);
 
 server.get('/api/ben/dover', (req, res) => {

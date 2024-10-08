@@ -34,10 +34,13 @@ export default function PaymentVerificationDialog({
   const queryClient = useQueryClient();
   const [error, setError] = useState('');
   const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // // Mutations
   const mutation = useMutation({
     mutationFn: async () => {
+      setIsSubmitting(() => true);
+
       const session = await getSession();
 
       if (session === null) router.push('/login');
@@ -68,7 +71,8 @@ export default function PaymentVerificationDialog({
           }
         );
 
-        setIsDialogOpen(false);
+        setIsDialogOpen(() => false);
+        setIsSubmitting(() => false);
 
         toast({
           title: `Payment Successfully ${
@@ -76,6 +80,7 @@ export default function PaymentVerificationDialog({
           }`,
         });
       } catch (err: any) {
+        setIsSubmitting(() => false);
         if (err.response) {
           setError(err.response.data.message);
         } else {
@@ -125,7 +130,7 @@ export default function PaymentVerificationDialog({
               )}
             >
               {verifyPayment ? 'verify' : 'deny'}
-            </span>
+            </span>{' '}
             this payment?
           </span>
 
@@ -146,9 +151,10 @@ export default function PaymentVerificationDialog({
                 : 'bg-rose-500 hover:bg-rose-500/75'
             )}
             onClick={() => mutation.mutate()}
+            disabled={isSubmitting}
           >
             {verifyPayment ? <ShieldCheck /> : <ShieldX />}
-            Submit
+            {isSubmitting ? 'Submitting...' : 'Submit'}
           </Button>
         </DialogFooter>
       </DialogContent>

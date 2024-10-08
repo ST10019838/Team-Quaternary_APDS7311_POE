@@ -39,14 +39,9 @@ const loginFormSchema = z.object({
     .regex(new RegExp(/^\d+$/), { message: 'Must be a number' })
     .min(9, { message: 'Must be 9 or more digits long' }) // More than a 9 digit number
     .max(12, { message: 'Must be 12 or fewer digits long' }), // Less than a 12 digit number,
-  password: z
-    .string({
-      required_error: 'Password is required',
-    })
-    .min(8, { message: 'Must be 8 or more characters long' })
-    .max(50, { message: 'Must be 50 or fewer characters long' }),
-  // .min(8, { message: 'Must be 8 or more characters long' })
-  // .max(50, { message: 'Must be 50 or fewer characters long' }),
+  password: z.string({
+    required_error: 'Password is required',
+  }),
 });
 
 type LoginForm = z.infer<typeof loginFormSchema>;
@@ -55,11 +50,14 @@ export default function LoginPage() {
   const queryClient = useQueryClient();
   const [error, setError] = useState('');
   const router = useRouter();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Mutations
   const mutation = useMutation({
     mutationFn: async ({ username, accountNumber, password }: LoginForm) => {
       try {
+        setIsSubmitting(() => true);
+
         const { data }: { data: Session } = await axios.post('/auth/login', {
           username,
           accountNumber,
@@ -67,10 +65,12 @@ export default function LoginPage() {
         });
 
         await saveSession(data);
+        setIsSubmitting(() => false);
 
         // localStorage.setItem('token', data.data.token);
         router.push(data.isAdmin ? '/admin/payments' : '/payments');
       } catch (err: any) {
+        setIsSubmitting(() => false);
         if (err.response) {
           setError(err.response.data.message);
         } else {
@@ -85,11 +85,6 @@ export default function LoginPage() {
 
   const form = useForm<z.infer<typeof loginFormSchema>>({
     resolver: zodResolver(loginFormSchema),
-    defaultValues: {
-      username: '',
-      accountNumber: '',
-      password: '',
-    },
   });
 
   function onSubmit(values: z.infer<typeof loginFormSchema>) {
@@ -155,7 +150,7 @@ export default function LoginPage() {
               {error && <span className="text-red-500">{error}</span>}
 
               <Button type="submit" className="w-full">
-                Sign In
+                {isSubmitting ? 'Signing In...' : 'Sign In'}
               </Button>
             </div>
           </form>
