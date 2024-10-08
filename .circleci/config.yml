@@ -103,6 +103,20 @@ workflows:
           requires:
             - build-node
 
+  build-and-deploy:  # Ensure this workflow has a unique name
+    jobs:
+      - build
+
+  build-and-test-phase-1:  # Unique workflow
+    jobs:
+      - test-node
+      - build-node:
+          requires:
+            - test-node
+      - sonar_scan:
+          requires:
+            - build-node
+
   build-and-deploy:  # Unique workflow
     jobs:
       - build
