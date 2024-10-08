@@ -1,10 +1,10 @@
-"use client";
+'use client';
 
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import { Button } from "@/components/ui/button";
-import axios from "axios";
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+import { Button } from '@/components/ui/button';
+
 import {
   Form,
   FormControl,
@@ -12,67 +12,94 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useToast } from '@/hooks/use-toast';
+import axios from '@/lib/axios';
 
 // Validation schema for the registration form
 const registerFormSchema = z.object({
   fullname: z
     .string({
-      required_error: "Full name is required",
+      required_error: 'Full Name is required',
     })
-    .min(3, { message: "Must be 3 or more characters long" })
-    .max(100, { message: "Must be 100 or fewer characters long" }),
-  idnumber: z
+    .regex(new RegExp(/^[A-Z][a-zA-Z]{3,}(?: [A-Z][a-zA-Z]*){0,2}$/), {
+      message:
+        'Words must start with uppercase letters, separated by 0 to 2 spaces. First name must be at least 3 characters long. No special characters allowed.',
+    })
+    .min(3, { message: 'Must be 3 or more characters long' })
+    .max(100, { message: 'Must be 100 or fewer characters long' }),
+  username: z
     .string({
-      required_error: "ID number is required",
+      required_error: 'Username is required',
     })
-    .min(13, { message: "Must be 13 digits long" })
-    .max(13, { message: "Must be 13 digits long" }),
-  accountnumber: z
+    .regex(new RegExp(/^[a-zA-Z0-9_]+$/), {
+      message:
+        'Only alphanumric characters and underscores are allowed. No spaces are allowed either.',
+    })
+    .min(3, { message: 'Must be 3 or more characters long' })
+    .max(50, { message: 'Must be 50 or fewer characters long' }),
+  idNumber: z
     .string({
-      required_error: "Account number is required",
+      required_error: 'ID Number is required',
     })
-    .min(10, { message: "Must be 10 digits long" })
-    .max(10, { message: "Must be 10 digits long" }),
+    .regex(new RegExp(/^\d+$/), { message: 'Must be a number' })
+    .min(13, { message: 'Must be 13 digits long' })
+    .max(13, { message: 'Must be 13 digits long' }),
+  accountNumber: z
+    .string({
+      required_error: 'Account Number is required',
+    })
+    .regex(new RegExp(/^\d+$/), { message: 'Must be a number' })
+    .min(9, { message: 'Must be 9 or more digits long' }) // More than a 9 digit number
+    .max(12, { message: 'Must be 12 or fewer digits long' }), // Less than a 12 digit number
   password: z
     .string({
-      required_error: "Password is required",
+      required_error: 'Password is required',
     })
-    .min(8, { message: "Must be 8 or more characters long" })
-    .max(50, { message: "Must be 50 or fewer characters long" }),
+    .min(8, { message: 'Must be 8 or more characters long' })
+    .max(50, { message: 'Must be 50 or fewer characters long' }),
 });
 
 type RegisterForm = z.infer<typeof registerFormSchema>;
 
 export default function RegisterPage() {
   const queryClient = useQueryClient();
-  const [error, setError] = useState("");
+  const [error, setError] = useState('');
   const router = useRouter();
+  const { toast } = useToast();
 
   // Mutations for handling form submission
   const mutation = useMutation({
-    mutationFn: async ({ fullname, idnumber, accountnumber, password }: RegisterForm) => {
+    mutationFn: async (registerForm: RegisterForm) => {
       try {
-        const response = await axios.post(
-          "http://localhost:5000/api/auth/register",
-          { fullname, idnumber, accountnumber, password }
-        );
-        localStorage.setItem("token", response.data.token);
-        router.push("/");
+        const response = await axios.post('/auth/register', {
+          fullname: registerForm.fullname,
+          username: registerForm.username,
+          idNumber: registerForm.idNumber,
+          accountNumber: parseInt(registerForm.accountNumber),
+          password: registerForm.password,
+        });
+
+        toast({
+          title: 'User Successfully Created!',
+          description: 'Log in to continue',
+        });
+
+        router.push('/login');
       } catch (err: any) {
         if (err.response) {
           setError(err.response.data.message);
         } else {
-          setError("Something went wrong. Please try again.");
+          setError('Something went wrong. Please try again.');
         }
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["users"] });
+      queryClient.invalidateQueries({ queryKey: ['users'] });
     },
   });
 
@@ -80,10 +107,11 @@ export default function RegisterPage() {
   const form = useForm<z.infer<typeof registerFormSchema>>({
     resolver: zodResolver(registerFormSchema),
     defaultValues: {
-      fullname: "",
-      idnumber: "",
-      accountnumber: "",
-      password: "",
+      fullname: '',
+      username: '',
+      idNumber: '',
+      accountNumber: '',
+      password: '',
     },
   });
 
@@ -97,7 +125,9 @@ export default function RegisterPage() {
         <h2 className="text-center text-3xl font-extrabold text-gray-900">
           Welcome to Scammer get Scammed!
         </h2>
-        <p className="text-center text-gray-600">Please fill in your details to register.</p>
+        <p className="text-center text-gray-600">
+          Please fill in your details to register.
+        </p>
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -117,7 +147,21 @@ export default function RegisterPage() {
 
             <FormField
               control={form.control}
-              name="idnumber"
+              name="username"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Username</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter your username" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="idNumber"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>ID Number</FormLabel>
@@ -131,7 +175,7 @@ export default function RegisterPage() {
 
             <FormField
               control={form.control}
-              name="accountnumber"
+              name="accountNumber"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Account Number</FormLabel>
@@ -161,9 +205,9 @@ export default function RegisterPage() {
               )}
             />
 
-            {error && <span className="text-red-500">{error}</span>}
+            <div className="flex flex-col items-center gap-2">
+              {error && <span className="text-red-500">{error}</span>}
 
-            <div>
               <Button type="submit" className="w-full">
                 Register
               </Button>
@@ -173,7 +217,7 @@ export default function RegisterPage() {
 
         <div className="text-center">
           <p className="text-gray-600">
-            Already have an account?{" "}
+            Already have an account?{' '}
             <a href="/login" className="text-blue-600 hover:underline">
               Sign In
             </a>

@@ -1,32 +1,64 @@
 import express from 'express';
-import Post from '../../models/Post.js';
 import Payment from '../../models/Payment-Mongoose.js';
+import User from '../../models/User-Mongoose.js';
 
 import authMiddleware from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
 // base route
-router.get('/', async (req, res) => {
+// router.get('/', async (req, res) => {
+//   try {
+//     const payments = await Payment.find();
+//     res.json(payments.reverse()); // reverses list to show newest payments first
+//   } catch (error) {
+//     res.status(500).json({ message: 'Internal Server error', error });
+//   }
+// });
+
+router.get('/pending', authMiddleware, async (req, res) => {
   try {
-    const posts = await Payment.find();
-    res.json(posts);
+    const userLoggedIn = await User.findOne({ _id: req.user.id });
+
+    if (!userLoggedIn.isAdmin) {
+      return res.status(403).json({ message: 'Insufficient permissions' });
+    }
+
+    const payments = await Payment.find({ isVerificationPending: true }).exec();
+    res.json(payments.reverse()); // reverses list to show newest payments first
   } catch (error) {
     res.status(500).json({ message: 'Internal Server error', error });
   }
 });
 
-router.get('/pending', async (req, res) => {
+// get by id
+router.get('/:accountNumber', authMiddleware, async (req, res) => {
   try {
-    const posts = await Payment.find({ isVerificationPending: true }).exec();
-    res.json(posts);
-  } catch (error) {
-    res.status(500).json({ message: 'Internal Server error', error });
+    const userLoggedIn = await User.findOne({ _id: req.user.id });
+
+    if (userLoggedIn.accountNumber !== parseInt(req.params.accountNumber)) {
+      return res
+        .status(403)
+        .json({ message: 'You can only access your accounts payments' });
+    }
+
+    const payments = await Payment.find({
+      senderAccountNumber: req.params.accountNumber,
+    }).exec();
+
+    if (!payments) {
+      return res.status(404).json({ message: 'Payments not found' });
+    }
+
+    return res.json(payments.reverse()); // reverses list to show newest payments first
+  } catch (err) {
+    console.error('Error getting payments', err);
+    res.status(500).json({ message: 'Server error', error: err });
   }
 });
 
 // create
-router.post('/create', async (req, res) => {
+router.post('/create', authMiddleware, async (req, res) => {
   const {
     paymentAmount,
     currency,
@@ -69,24 +101,8 @@ router.post('/create', async (req, res) => {
   }
 });
 
-// get by id
-router.get('/:id', async (req, res) => {
-  try {
-    const post = await Post.findById(req.params.id);
-
-    if (!post) {
-      return res.status(404).json({ message: 'Post not found' });
-    }
-
-    return res.json(post);
-  } catch (err) {
-    console.error('Error getting post', err);
-    res.status(500).json({ message: 'Server error', error: err });
-  }
-});
-
 // update by id
-router.put('/:id', async (req, res) => {
+router.put('/:id', authMiddleware, async (req, res) => {
   //validate request body
   const {
     paymentAmount,
@@ -100,10 +116,8 @@ router.put('/:id', async (req, res) => {
     isVerificationPending,
   } = req.body;
 
-  // Need to add verfication changes aswell
-  if (/* user is not an admin */ false) {
-    if (!isVerificationPending)
-      return res.status(400).json({ message: 'Cannot update the Payment' });
+  if (!isVerificationPending) {
+    return res.status(400).json({ message: 'Cannot update the Payment' });
   }
 
   if (
@@ -144,7 +158,7 @@ router.put('/:id', async (req, res) => {
     const updatedPayment = await Payment.findByIdAndUpdate(
       req.params.id,
       updatedFields,
-      { new: false }
+      { new: true }
     );
 
     if (!updatedPayment) {
@@ -159,7 +173,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // delete by id
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', authMiddleware, async (req, res) => {
   try {
     const { isVerificationPending } = req.body;
 
@@ -175,6 +189,70 @@ router.delete('/:id', async (req, res) => {
     res.json({ message: 'Payment deleted' });
   } catch (err) {
     console.error('Error deleting Payment', err);
+    res.status(500).json({ message: 'Server error', error: err });
+  }
+});
+
+router.post('/verify/:id', authMiddleware, async (req, res) => {
+  try {
+    // Maybe check if the payment is still pending to determine if it can be verified
+    // const { isVerificationPending } = req.body;
+
+    const userLoggedIn = await User.findOne({ _id: req.user.id });
+
+    if (!userLoggedIn.isAdmin) {
+      return res.status(400).json({ message: 'Cannot verify the Payment' });
+    }
+
+    const updatedPayment = await Payment.findByIdAndUpdate(
+      req.params.id,
+      {
+        verifiedBy: userLoggedIn._id,
+        isVerificationPending: false,
+        isVerified: true,
+      },
+      { new: true }
+    );
+
+    if (!updatedPayment) {
+      return res.status(484).json({ message: 'Payment not found' });
+    }
+
+    res.json({ message: 'Payment verified', updatedPayment });
+  } catch (err) {
+    console.error('Error updating payment', err);
+    res.status(500).json({ message: 'Server error', error: err });
+  }
+});
+
+router.post('/deny/:id', authMiddleware, async (req, res) => {
+  try {
+    // Maybe check if the payment is still pending to determine if it can be denied
+    // const { isVerificationPending } = req.body;
+
+    const userLoggedIn = await User.findOne({ _id: req.user.id });
+
+    if (!userLoggedIn.isAdmin) {
+      return res.status(400).json({ message: 'Cannot deny the Payment' });
+    }
+
+    const updatedPayment = await Payment.findByIdAndUpdate(
+      req.params.id,
+      {
+        verifiedBy: userLoggedIn._id,
+        isVerificationPending: false,
+        isVerified: false,
+      },
+      { new: true }
+    );
+
+    if (!updatedPayment) {
+      return res.status(484).json({ message: 'Payment not found' });
+    }
+
+    res.json({ message: 'Payment denied', updatedPayment });
+  } catch (err) {
+    console.error('Error updating payment', err);
     res.status(500).json({ message: 'Server error', error: err });
   }
 });

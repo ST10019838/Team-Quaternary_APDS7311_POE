@@ -27,7 +27,7 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "src/server/server.js",
-    "src/models/User.js",
+    "src/models/User-Mongoose.js",
     "src/models/Post.js",
     "src/models/LoginAttempt.js",
     "src/server/db/connection.js",
