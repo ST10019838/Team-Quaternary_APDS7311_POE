@@ -79,7 +79,11 @@ jobs:
       - image: node:latest
     steps:
       - checkout
-      - sonarcloud/scan
+      - sonarcloud/scan:
+          sonar-project-key: "ST10019838_Team-Quaternary_APDS7311_POE"  # Your project key
+          sonar-organization: "st10019838"  # Your organization name
+          sonar-host-url: "https://sonarcloud.io/"  # SonarCloud URL
+          sonar-login: $SONAR_TOKEN  # Token for authentication
 
 workflows:
   build-and-test:
