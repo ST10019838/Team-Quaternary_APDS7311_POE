@@ -1,9 +1,17 @@
 version: 2.1
+
 orbs:
   node: circleci/node@5
-  sonarcloud: sonarsource/sonarcloud@1.1.0
+  sonarcloud: sonarsource/sonarcloud@2.0.0
+
+executors:
+  sonar-executor:
+    docker:
+      - image: circleci/openjdk:11-jdk
+    working_directory: ~/project/application
+
 jobs:
-  #Job to run tests for the React app
+  # Job to run tests for the React app
   test:
     executor: sonar-executor
     steps:
@@ -34,8 +42,11 @@ jobs:
             -Dsonar.organization=st10019838 \
             -Dsonar.sources=src \
             -Dsonar.host.url=https://sonarcloud.io/ \
-            -Dsonar.login=$SONAR_TOKEN
+            -Dsonar.login=$SONAR_TOKEN \
+            -Dsonar.java.binaries=./build \
+            -X
 
+  # Job to test the Node app
   test-node:
     executor: node/default
     working_directory: ~/project/application
@@ -54,6 +65,7 @@ jobs:
       - store_test_results:
           path: ./test-results/
 
+  # Job to build the Node app
   build-node:
     executor: node/default
     working_directory: ~/project/application
@@ -74,6 +86,7 @@ jobs:
           path: ~/artifacts
           destination: node-build
 
+  # Job to build and analyze with SonarCloud
   build:
     docker:
       - image: node:latest
@@ -88,7 +101,8 @@ workflows:
       - build-node:
           requires:
             - test-node
+      - sonar_scan:
+          requires:
+            - build-node
       - build:
           context: sonarcloud
-
-
