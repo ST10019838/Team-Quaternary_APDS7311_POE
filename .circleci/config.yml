@@ -93,7 +93,7 @@ jobs:
       - sonarcloud/scan
 
 workflows:
-  build-and-test:  # Unique workflow
+  build-and-test-phase-1:  # Unique workflow
     jobs:
       - test-node
       - build-node:
@@ -107,7 +107,21 @@ workflows:
     jobs:
       - build
 
-  build-and-test:
+  build-and-test-phase-2:  # Unique workflow
+    jobs:
+      - test-node
+      - build-node:
+          requires:
+            - test-node
+      - sonar_scan:
+          requires:
+            - build-node
+
+  build-and-deploy:  # Unique workflow
+    jobs:
+      - build
+
+  build-and-test-phase-3:
     jobs:
       - test-node
       - build-node:
