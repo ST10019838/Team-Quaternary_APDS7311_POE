@@ -1,7 +1,5 @@
-import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { saveSession } from './lib/session';
 
 interface Session {
   username: string;
@@ -19,17 +17,6 @@ export function middleware(request: NextRequest) {
     ? JSON.parse(cookie?.value!)
     : null;
 
-  const userDetails: Session = {
-    username: 'yourmom',
-    isAdmin: true,
-    token: 'IDKBRO',
-  };
-
-  const response = NextResponse.next();
-  response.cookies.set({
-    name: 'session',
-    value: JSON.stringify(userDetails),
-  });
   // // cookie = response.cookies.get('vercel');
   // // console.log(cookie);
 
