@@ -33,10 +33,13 @@ export default function DeletePaymentDialog({
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
   const { toast } = useToast();
   const router = useRouter();
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // // Mutations
   const mutation = useMutation({
     mutationFn: async () => {
+      setIsDeleting(() => true);
+
       const session = await getSession();
 
       if (session === null) router.push('/login');
@@ -51,12 +54,15 @@ export default function DeletePaymentDialog({
           },
         });
 
-        setIsDialogOpen(false);
+        setIsDialogOpen(() => false);
+        setIsDeleting(() => false);
 
         toast({
           title: 'Payment Successfully Deleted',
         });
       } catch (err: any) {
+        setIsDeleting(() => false);
+
         if (err.response) {
           setError(err.response.data.message);
         } else {
@@ -101,9 +107,10 @@ export default function DeletePaymentDialog({
             variant="destructive"
             className="w-full sm:w-max gap-2"
             onClick={() => mutation.mutate()}
+            disabled={isDeleting}
           >
             <Trash2 />
-            Delete
+            {isDeleting ? 'Deleting...' : 'Delete'}
           </Button>
         </DialogFooter>
       </DialogContent>

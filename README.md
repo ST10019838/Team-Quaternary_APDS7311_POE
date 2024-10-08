@@ -24,6 +24,16 @@ Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the cli
 
 - Don't forget to add your custom environment variables if you aren't able to connect to the online mongo Altas we have set up. Then don't forget to add an admin user by looking at the User-Mongoose.js file to see how to insert an Admin / Employee as the registration only creates users! (Message Damian or Christiaan to add IP address to Atlas if need be)
 
+</br>
+
+## Admin Credentials (if using our Atlas)
+
+- Username: Admin
+- Account Number: 100000002
+- Password: P1
+
+</br>
+
 ## Components of this repository
 
 - application - a folder containing source code for the project
@@ -47,7 +57,7 @@ The following tutorials can found be under the Tutorials folder:
 
 **_Part 2:_**
 
-- TeamQuaternary_APDS7311_Part2_Tutorial
+- Team_Quaternary_APDS7311_Part2_Tutorial
 
 </br>
 </br>

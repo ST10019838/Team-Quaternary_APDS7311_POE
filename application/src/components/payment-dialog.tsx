@@ -115,11 +115,14 @@ export default function PaymentDialog({
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
   const { toast } = useToast();
   const router = useRouter();
+  const [isPerforming, setIsPerforming] = useState(false);
 
   // Mutations
   const mutation = useMutation({
     mutationFn: async (paymentForm: PaymentForm) => {
       try {
+        setIsPerforming(() => true);
+
         const session = await getSession();
 
         if (session === null) router.push('/login');
@@ -153,7 +156,8 @@ export default function PaymentDialog({
           });
         }
 
-        setIsDialogOpen(false);
+        setIsDialogOpen(() => false);
+        setIsPerforming(() => false);
 
         form.reset();
 
@@ -163,6 +167,8 @@ export default function PaymentDialog({
             : 'Payment Successfully Created',
         });
       } catch (err: any) {
+        setIsPerforming(() => false);
+
         if (err.response) {
           setError(err.response.data.message);
         } else {
@@ -327,8 +333,14 @@ export default function PaymentDialog({
 
             <div className="flex flex-col gap-2">
               {error && <span className="text-red-500">{error}</span>}
-              <Button type="submit" className="w-full">
-                {payment ? 'Edit Payment' : 'Pay Now'}
+              <Button type="submit" className="w-full" disabled={isPerforming}>
+                {payment
+                  ? isPerforming
+                    ? 'Editing...'
+                    : 'Edit Payment'
+                  : isPerforming
+                  ? 'Paying Now...'
+                  : 'Pay Now'}
               </Button>
 
               <DialogClose asChild>

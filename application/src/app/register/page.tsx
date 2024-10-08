@@ -56,12 +56,9 @@ const registerFormSchema = z.object({
     .regex(new RegExp(/^\d+$/), { message: 'Must be a number' })
     .min(9, { message: 'Must be 9 or more digits long' }) // More than a 9 digit number
     .max(12, { message: 'Must be 12 or fewer digits long' }), // Less than a 12 digit number
-  password: z
-    .string({
-      required_error: 'Password is required',
-    })
-    .min(8, { message: 'Must be 8 or more characters long' })
-    .max(50, { message: 'Must be 50 or fewer characters long' }),
+  password: z.string({
+    required_error: 'Password is required',
+  }),
 });
 
 type RegisterForm = z.infer<typeof registerFormSchema>;
@@ -71,11 +68,14 @@ export default function RegisterPage() {
   const [error, setError] = useState('');
   const router = useRouter();
   const { toast } = useToast();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Mutations for handling form submission
   const mutation = useMutation({
     mutationFn: async (registerForm: RegisterForm) => {
       try {
+        setIsSubmitting(() => true);
+
         const response = await axios.post('/auth/register', {
           fullname: registerForm.fullname,
           username: registerForm.username,
@@ -89,8 +89,10 @@ export default function RegisterPage() {
           description: 'Log in to continue',
         });
 
+        setIsSubmitting(() => false);
         router.push('/login');
       } catch (err: any) {
+        setIsSubmitting(() => false);
         if (err.response) {
           setError(err.response.data.message);
         } else {
@@ -106,13 +108,6 @@ export default function RegisterPage() {
   // Initialize form with validation
   const form = useForm<z.infer<typeof registerFormSchema>>({
     resolver: zodResolver(registerFormSchema),
-    defaultValues: {
-      fullname: '',
-      username: '',
-      idNumber: '',
-      accountNumber: '',
-      password: '',
-    },
   });
 
   function onSubmit(values: z.infer<typeof registerFormSchema>) {
@@ -208,8 +203,8 @@ export default function RegisterPage() {
             <div className="flex flex-col items-center gap-2">
               {error && <span className="text-red-500">{error}</span>}
 
-              <Button type="submit" className="w-full">
-                Register
+              <Button type="submit" className="w-full" disabled={isSubmitting}>
+                {isSubmitting ? 'Registering...' : 'Register'}
               </Button>
             </div>
           </form>
