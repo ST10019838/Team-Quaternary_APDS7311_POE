@@ -7,7 +7,7 @@ orbs:
 executors:
   sonar-executor:
     docker:
-      - image: circleci/openjdk:11-jdk
+      - image: circleci/openjdk:17-jdk
     working_directory: ~/project/application
 
 jobs:
@@ -17,7 +17,7 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Nav & Install dependencies
+          name: Install dependencies
           command: cd application && npm install
       - run:
           name: Run Tests
@@ -46,7 +46,7 @@ jobs:
             -Dsonar.java.binaries=./build \
             -X
 
-  # Job to test the Node app
+  # Job to test the Node.js app
   test-node:
     executor: node/default
     working_directory: ~/project/application
@@ -65,7 +65,7 @@ jobs:
       - store_test_results:
           path: ./test-results/
 
-  # Job to build the Node app
+  # Job to build the Node.js app
   build-node:
     executor: node/default
     working_directory: ~/project/application
@@ -92,9 +92,22 @@ jobs:
       - image: node:latest
     steps:
       - checkout
+      - run:
+          name: Install dependencies
+          command: npm install
       - sonarcloud/scan
 
 workflows:
+  build-and-test:
+    jobs:
+      - test-node
+      - build-node:
+          requires:
+            - test-node
+      - sonar_scan:
+          requires:
+            - test-node
+
   build-and-test:
     jobs:
       - test-node
