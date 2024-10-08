@@ -67,7 +67,7 @@ jobs:
           name: Run SonarCloud Analysis
           command: |
             npx sonar-scanner \
-            -Dsonar.projectKey=$CIRCLE_BRANCH:$CIRCLE_PROJECT_REPONAME \
+            -Dsonar.projectKey=ST10019838_Team-Quaternary_APDS7311_POE \
             -Dsonar.sources=src \
             -Dsonar.host.url=https://sonarcloud.io/ \
             -Dsonar.login=$SONAR_TOKEN \
