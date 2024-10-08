@@ -10,11 +10,19 @@ Team Members:
 - ST10158660 - Ruan Zwarts
 
 </br>
-NOTE: 
+NOTE:
 
 - Check out the "How to Run" section and for the scripts to properly run the application
-- Don't forget to add your custom environment variables (Optional)
 
+- If the following error occurs when attempting to log in, restart the api:
+
+```
+Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+```
+
+(I tried finding this bug, but everything looks correct and it pops up randomly which makes it difficult to catch)
+
+- Don't forget to add your custom environment variables (Optional)
 
 ## Components of this repository
 
