@@ -1,0 +1,14 @@
+Team Quaternary APDS7311 Links and Members:
+
+Team Members:
+  ST10019838 - Damian Dare
+  ST10019972 - Guillaume Swanevelder 
+  ST10091991 - Christiaan Versfeld
+  ST10158660 - Ruan Zwarts
+
+
+Personal Repository Link:
+https://github.com/ST10019838/Team-Quaternary_APDS7311_POE.git
+
+Part 2 Github Classroom Link:
+https://github.com/IIEWFL/apds7311-part-2-team-quaternary.git
