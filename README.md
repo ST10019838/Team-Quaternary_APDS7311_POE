@@ -22,7 +22,7 @@ Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the cli
 
 (I tried finding this bug, but everything looks correct and it pops up randomly which makes it difficult to catch)
 
-- Don't forget to add your custom environment variables if you aren't able to connect to the online mongo Altas we have set up. Then don't forget to add an admin user by looking at the User-Mongoose.js file to see how to insert an Admin / Employee as the registration only creates users!
+- Don't forget to add your custom environment variables if you aren't able to connect to the online mongo Altas we have set up. Then don't forget to add an admin user by looking at the User-Mongoose.js file to see how to insert an Admin / Employee as the registration only creates users! (Message Damian or Christiaan to add IP address to Atlas if need be)
 
 ## Components of this repository
 
