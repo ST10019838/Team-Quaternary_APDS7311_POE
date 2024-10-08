@@ -43,7 +43,7 @@ jobs:
 
   build:
     docker:
-      - image: node:latest # Use a Java 17 Docker / Old: node:latest
+      - image: node:latest
     steps:
       - checkout
       - sonarcloud/scan
