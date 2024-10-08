@@ -7,7 +7,7 @@ orbs:
 executors:
   sonar-executor:
     docker:
-      - image: circleci/openjdk:17-jdk
+      - image: circleci/openjdk:11-jdk  # Updated to a valid version
     working_directory: ~/project/application
 
 jobs:
@@ -106,4 +106,4 @@ workflows:
             - test-node
       - sonar_scan:
           requires:
-            - test-node
+            - build-node  # Ensure sonar_scan runs after build-node
