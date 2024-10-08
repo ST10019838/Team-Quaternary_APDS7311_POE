@@ -1,49 +1,51 @@
 version: 2.1
-orbs:
-  node: circleci/node@5
+
+executors:
+  sonar-executor:
+    docker:
+      # Use a Node.js image since you're working with a Create React App
+      - image: cimg/node:16.17
+    working_directory: ~/repo
+
 jobs:
-  test-node:
-    executor: node/default
-    working_directory: ~/project/application
-    environment:
-      JEST_JUNIT_OUTPUT_DIR: ./test-results/
+  # Job to run tests for the React app
+  test:
+    executor: sonar-executor
     steps:
-      - checkout:
-          path: ~/project
-      - node/install-packages:
-          pkg-manager: npm
+      - checkout
       - run:
-          command: npm install jest-junit
+          name: Nav & Install dependencies
+          command: cd application && npm install
       - run:
-          name: Run tests
-          command: npm run test --ci --runInBand --reporters=default --reporters=jest-junit
-      - store_test_results:
-          path: ./test-results/
-          
-  build-node:
-    executor: node/default
-    working_directory: ~/project/application
+          name: Run Tests
+          command: npm test -- --watchAll=false
+
+  # Job to run SonarCloud analysis
+  sonar_scan:
+    executor: sonar-executor
     steps:
-      - checkout:
-          path: ~/project
-      - node/install-packages:
-          pkg-manager: npm
+      - checkout
       - run:
-          command: npm run build
+          name: Navigate to app folder
+          command: cd application
       - run:
-          name: Create the ~/artifacts directory if it doesn't exist
-          command: mkdir -p ~/artifacts
+          name: Install SonarQube Scanner via npm
+          command: npm install sonarqube-scanner --save-dev
       - run:
-          name: Copy artifacts
-          command: cp -R build dist public .output .next .docusaurus ~/artifacts 2>/dev/null || true
-      - store_artifacts:
-          path: ~/artifacts
-          destination: node-build
+          name: Run SonarCloud Analysis
+          command: |
+            npx sonar-scanner \
+            -Dsonar.projectKey=$CIRCLE_BRANCH:$CIRCLE_PROJECT_REPONAME \
+            -Dsonar.sources=src \
+            -Dsonar.host.url=https://sonarcloud.io/ \
+            -Dsonar.login=$SONAR_TOKEN \
+            -Dsonar.organization=st10019838
 
 workflows:
-  build-and-test:
+  version: 2
+  test_and_sonar:
     jobs:
-      - test-node
-      - build-node:
+      - test
+      - sonar_scan:
           requires:
-            - test-node
+            - test
