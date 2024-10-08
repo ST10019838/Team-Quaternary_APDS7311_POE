@@ -3,6 +3,39 @@ orbs:
   node: circleci/node@5
   sonarcloud: sonarsource/sonarcloud@2.0.0
 jobs:
+  #Job to run tests for the React app
+  test:
+    executor: sonar-executor
+    steps:
+      - checkout
+      - run:
+          name: Nav & Install dependencies
+          command: cd application && npm install
+      - run:
+          name: Run Tests
+          command: npm test -- --watchAll=false
+
+  # Job to run SonarCloud analysis
+  sonar_scan:
+    executor: sonar-executor
+    steps:
+      - checkout
+      - run:
+          name: Navigate to app folder
+          command: cd application
+      - run:
+          name: Install SonarQube Scanner via npm
+          command: npm install sonarqube-scanner --save-dev
+      - run:
+          name: Run SonarCloud Analysis
+          command: |
+            npx sonar-scanner \
+            -Dsonar.projectKey=ST10019838_Team-Quaternary_APDS7311_POE \
+            -Dsonar.organization=st10019838 \
+            -Dsonar.sources=src \
+            -Dsonar.host.url=https://sonarcloud.io/ \
+            -Dsonar.login=$SONAR_TOKEN
+
   test-node:
     executor: node/default
     working_directory: ~/project/application
@@ -58,35 +91,4 @@ workflows:
       - build:
           context: sonarcloud
 
-  # Job to run tests for the React app
-  # test:
-  #   executor: sonar-executor
-  #   steps:
-  #     - checkout
-  #     - run:
-  #         name: Nav & Install dependencies
-  #         command: cd application && npm install
-  #     - run:
-  #         name: Run Tests
-  #         command: npm test -- --watchAll=false
 
-  # # Job to run SonarCloud analysis
-  # sonar_scan:
-  #   executor: sonar-executor
-  #   steps:
-  #     - checkout
-  #     - run:
-  #         name: Navigate to app folder
-  #         command: cd application
-  #     - run:
-  #         name: Install SonarQube Scanner via npm
-  #         command: npm install sonarqube-scanner --save-dev
-  #     - run:
-  #         name: Run SonarCloud Analysis
-  #         command: |
-  #           npx sonar-scanner \
-  #           -Dsonar.projectKey=ST10019838_Team-Quaternary_APDS7311_POE \
-  #           -Dsonar.organization=st10019838 \
-  #           -Dsonar.sources=src \
-  #           -Dsonar.host.url=https://sonarcloud.io/ \
-  #           -Dsonar.login=$SONAR_TOKEN
