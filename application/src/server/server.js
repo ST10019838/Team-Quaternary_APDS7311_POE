@@ -25,7 +25,7 @@ connectDB();
 // Middleware
 server.use(express.json());
 server.use(helmet()); // Adds security-related HTTP headers
-server.use(cors()); // Configures CORS
+server.use(cors({ origin: 'https://localhost:3000' })); // Configures CORS
 server.use(morgan('combined'));
 
 // Routes
