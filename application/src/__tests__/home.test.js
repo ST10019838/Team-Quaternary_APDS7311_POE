@@ -6,6 +6,6 @@ import Home from '../app/page.tsx'; // Adjust the path as necessary
 describe('Home Page', () => {
   it('checks for relevant text', () => {
     const { getByText } = render(<Home />);
-    expect(getByText('This is the home page')).toBeInTheDocument();
+    expect(getByText('This is home')).toBeInTheDocument();
   });
 });
