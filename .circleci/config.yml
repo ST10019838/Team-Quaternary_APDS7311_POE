@@ -40,7 +40,7 @@ jobs:
             npx sonar-scanner \
             -Dsonar.projectKey=ST10019838_Team-Quaternary_APDS7311_POE \
             -Dsonar.organization=st10019838 \
-            -Dsonar.sources=src \
+            -Dsonar.sources=application/src \
             -Dsonar.host.url=https://sonarcloud.io/ \
             -Dsonar.login=$SONAR_TOKEN \
             -Dsonar.java.binaries=./build \
