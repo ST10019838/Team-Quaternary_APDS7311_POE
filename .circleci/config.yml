@@ -43,7 +43,7 @@ jobs:
 
   build:
     docker:
-      - image: circleci/openjdk:17  # Use a Java 17 Docker / Old: node:latest
+      - image: node/default # Use a Java 17 Docker / Old: node:latest
     steps:
       - checkout
       - sonarcloud/scan
@@ -57,7 +57,6 @@ workflows:
             - test-node
       - build:
           context: sonarcloud
-
 
   # Job to run tests for the React app
   # test:
