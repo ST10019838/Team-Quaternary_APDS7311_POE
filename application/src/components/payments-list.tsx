@@ -1,24 +1,30 @@
 import Payment from '@/models/Payment';
 import { useQuery } from '@tanstack/react-query';
 import PaymentsListItem from './payments-list-item';
-import { Button } from './ui/button';
+import { Button } from './shadcn-ui/button';
 import { toast } from 'sonner';
 import axios from '@/lib/axios';
 import { getSession } from '@/lib/session';
 import { useRouter } from 'next/navigation';
 
-export default function PaymentsList({ useAdmin }: { useAdmin?: boolean }) {
+export default function PaymentsList({
+  useEmployee,
+}: {
+  useEmployee?: boolean;
+}) {
   const router = useRouter();
 
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: [useAdmin ? 'pending-payments' : 'user-payments'],
+    queryKey: [useEmployee ? 'pending-payments' : 'user-payments'],
     queryFn: async () => {
       const session = await getSession();
 
       if (session === null) router.push('/login');
 
       const { data } = await axios.get(
-        useAdmin ? '/payments/pending' : `/payments/${session?.accountNumber}`,
+        useEmployee
+          ? '/payments/pending'
+          : `/payments/${session?.accountNumber}`,
         {
           headers: {
             Authorization: `Bearer ${session?.token}`,
@@ -59,7 +65,7 @@ export default function PaymentsList({ useAdmin }: { useAdmin?: boolean }) {
         <PaymentsListItem
           key={payment._id}
           payment={payment}
-          useAdmin={useAdmin}
+          useEmployee={useEmployee}
         />
       ))}
     </div>

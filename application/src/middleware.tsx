@@ -4,6 +4,7 @@ import type { NextRequest } from 'next/server';
 interface Session {
   username: string;
   isAdmin: boolean;
+  isEmployee: boolean;
   token: string;
 }
 
@@ -31,11 +32,18 @@ export function middleware(request: NextRequest) {
   //   return NextResponse.redirect(new URL('/login', request.url));
   // }
 
-  if (path.startsWith('/login') || path.startsWith('/register')) {
+  if (path.startsWith('/login')) {
     if (hasSession) {
-      return NextResponse.redirect(
-        new URL(user?.isAdmin ? '/admin/payments' : '/payments', request.url)
-      );
+      if (user?.isAdmin || user?.isEmployee) {
+        return NextResponse.redirect(
+          new URL('/admin/payments-verification', request.url)
+        );
+      }
+
+      return NextResponse.redirect(new URL('/payments', request.url));
+      // return NextResponse.redirect(
+      //   new URL(user?.isAdmin ? '/admin/payments' : '/payments', request.url)
+      // );
     }
 
     return NextResponse.next();
@@ -45,8 +53,11 @@ export function middleware(request: NextRequest) {
 
   if (path.startsWith('/payments')) {
     if (hasSession) {
-      if (user?.isAdmin) {
-        return NextResponse.redirect(new URL('/admin/payments', request.url));
+      if (user?.isAdmin || user?.isEmployee) {
+        return NextResponse.redirect(
+          new URL('/admin/payments-verification', request.url)
+        );
+        // return NextResponse.redirect(new URL('/admin/payments', request.url));
       }
 
       return NextResponse.next();
@@ -55,15 +66,56 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL('/login', request.url));
   }
 
+  // if (path.startsWith('/admin')) {
+  //   if (hasSession) {
+  //     if (user?.isAdmin) return NextResponse.next();
+
+  //     return NextResponse.redirect(new URL('/payments', request.url));
+  //   }
+
+  //   return NextResponse.redirect(new URL('/login', request.url));
+  // }
+
   if (path.startsWith('/admin')) {
     if (hasSession) {
       if (user?.isAdmin) return NextResponse.next();
+
+      if (user?.isEmployee && path.startsWith('/admin/payments-verification'))
+        return NextResponse.next();
+      // return NextResponse.redirect(
+      //   new URL('/admin/payments-verification', request.url)
+      // );
 
       return NextResponse.redirect(new URL('/payments', request.url));
     }
 
     return NextResponse.redirect(new URL('/login', request.url));
   }
+
+  // if (path.startsWith('/admin/payments-verification')) {
+  //   if (hasSession) {
+  //     if (user?.isAdmin || user?.isEmployee) return NextResponse.next();
+
+  //     return NextResponse.redirect(new URL('/payments', request.url));
+  //   }
+
+  //   return NextResponse.redirect(new URL('/login', request.url));
+  // }
+
+  // if (path.startsWith('/admin/user-management')) {
+  //   if (hasSession) {
+  //     if (user?.isAdmin) return NextResponse.next();
+
+  //     if (user?.isEmployee)
+  //       return NextResponse.redirect(
+  //         new URL('/admin/payments-verification', request.url)
+  //       );
+
+  //     return NextResponse.redirect(new URL('/payments', request.url));
+  //   }
+
+  //   return NextResponse.redirect(new URL('/login', request.url));
+  // }
 
   if (path == '/') {
     return NextResponse.redirect(new URL('/login', request.url));

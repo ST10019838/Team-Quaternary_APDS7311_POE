@@ -52,6 +52,11 @@ const userSchema = new mongoose.Schema({
     default: false,
     immutable: true,
   },
+  isEmployee: {
+    type: Boolean,
+    required: true,
+    default: false,
+  },
 });
 
 export default mongoose.model('User', userSchema);

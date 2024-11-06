@@ -5,16 +5,16 @@ const ATLAS_URI = process.env.ATLAS_URI;
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(MONGO_URI);
-    console.log(`connected ${MONGO_URI}`);
+    await mongoose.connect(ATLAS_URI);
+    console.log(`connected ${ATLAS_URI}`);
   } catch (err) {
-    console.error(`Failed to connect to ${MONGO_URI}: ${err.message}`);
+    console.error(`Failed to connect to ${ATLAS_URI}: ${err.message}`);
     console.log('Trying to connect to ${ATLAS_URI}');
     try {
-      await mongoose.connect(ATLAS_URI);
-      console.log(`connected ${ATLAS_URI}`);
+      await mongoose.connect(MONGO_URI);
+      console.log(`connected ${MONGO_URI}`);
     } catch (err) {
-      console.error('Failed to connect to HONGODB', err);
+      console.error('Failed to connect to MONGODB', err);
       process.exit(1);
     }
   }

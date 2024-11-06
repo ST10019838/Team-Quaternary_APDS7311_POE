@@ -12,14 +12,14 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
+} from '@/components/shadcn-ui/form';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from '@/components/shadcn-ui/select';
 import {
   Dialog,
   DialogClose,
@@ -29,22 +29,22 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
+} from '@/components/shadcn-ui/dialog';
 
-import { Input } from '@/components/ui/input';
+import { Input } from '@/components/shadcn-ui/input';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { AnyARecord } from 'dns';
 import { ReactNode, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/shadcn-ui/button';
 import Payment, {
   currencies,
   PaymentInsert,
   paymentProviders,
 } from '@/models/Payment';
 import { Regex } from 'lucide-react';
-import { Separator } from './ui/separator';
+import { Separator } from './shadcn-ui/separator';
 import { toast } from 'sonner';
 import { useToast } from '@/hooks/use-toast';
 import { getSession } from '@/lib/session';

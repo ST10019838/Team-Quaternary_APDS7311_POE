@@ -10,11 +10,11 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from '@/components/ui/dialog';
+} from '@/components/shadcn-ui/dialog';
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { ReactNode, useState } from 'react';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/shadcn-ui/button';
 import Payment, { PaymentInsert } from '@/models/Payment';
 import { ShieldCheck, ShieldX, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';

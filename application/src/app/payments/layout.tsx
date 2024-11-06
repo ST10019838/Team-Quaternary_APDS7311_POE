@@ -1,6 +1,6 @@
 import AccountDetails from '@/components/account-details';
 import PaymentDialog from '@/components/payment-dialog';
-import { Separator } from '@/components/ui/separator';
+import { Separator } from '@/components/shadcn-ui/separator';
 
 export default function CustomerLayout({
   children,

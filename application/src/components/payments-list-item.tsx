@@ -8,18 +8,18 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from './ui/card';
+} from './shadcn-ui/card';
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from '@/components/ui/tooltip';
+} from '@/components/shadcn-ui/tooltip';
 
 import { Separator } from '@radix-ui/react-select';
-import { Badge } from '@/components/ui/badge';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Button } from './ui/button';
+import { Badge } from '@/components/shadcn-ui/badge';
+import { ScrollArea } from '@/components/shadcn-ui/scroll-area';
+import { Button } from './shadcn-ui/button';
 import { Clock, Pencil, ShieldCheck, ShieldX, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import PaymentDialog from './payment-dialog';
@@ -29,10 +29,10 @@ import PaymentVerificationDialog from './payment-verification-dialog';
 
 export default function PaymentsListItem({
   payment,
-  useAdmin,
+  useEmployee,
 }: {
   payment: Payment;
-  useAdmin?: boolean;
+  useEmployee?: boolean;
 }) {
   return (
     <Card className="w-full max-w-sm ">
@@ -47,22 +47,31 @@ export default function PaymentsListItem({
       <CardContent className="">
         <ScrollArea className="h-52">
           <div className="pr-4 space-y-4">
-            <div className="space-y-2">
+            <div className="flex justify-between items-center">
               <span className="text-sm font-medium text-muted-foreground">
-                Sender ID Number
+                Provider
               </span>
-              <p className="text-sm font-mono bg-muted p-2 rounded">
-                {payment.senderIdNumber}
-              </p>
+              <Badge variant="secondary">{payment.paymentProvider}</Badge>
+            </div>
+            <Separator />
+
+            <div className="flex justify-between items-center ">
+              <span className="text-sm font-medium text-muted-foreground">
+                Amount
+              </span>
+              <span className="text-sm sm:text-lg font-bold">
+                {payment.paymentAmount.toFixed(2) + ' '}
+                {payment.currency.toUpperCase()}
+              </span>
             </div>
             <Separator />
 
             <div className="space-y-2">
               <span className="text-sm font-medium text-muted-foreground">
-                Sender Account
+                Payment Code
               </span>
               <p className="text-sm font-mono bg-muted p-2 rounded">
-                {payment.senderAccountNumber}
+                {payment.paymentCode}
               </p>
             </div>
             <Separator />
@@ -79,30 +88,21 @@ export default function PaymentsListItem({
 
             <div className="space-y-2">
               <span className="text-sm font-medium text-muted-foreground">
-                Payment Code
+                Sender Account
               </span>
               <p className="text-sm font-mono bg-muted p-2 rounded">
-                {payment.paymentCode}
+                {payment.senderAccountNumber}
               </p>
             </div>
             <Separator />
 
-            <div className="flex justify-between items-center ">
+            <div className="space-y-2">
               <span className="text-sm font-medium text-muted-foreground">
-                Amount
+                Sender ID Number
               </span>
-              <span className="text-sm sm:text-lg font-bold">
-                {payment.paymentAmount.toFixed(2) + ' '}
-                {payment.currency.toUpperCase()}
-              </span>
-            </div>
-
-            <Separator />
-            <div className="flex justify-between items-center">
-              <span className="text-sm font-medium text-muted-foreground">
-                Provider
-              </span>
-              <Badge variant="secondary">{payment.paymentProvider}</Badge>
+              <p className="text-sm font-mono bg-muted p-2 rounded">
+                {payment.senderIdNumber}
+              </p>
             </div>
           </div>
         </ScrollArea>
@@ -114,7 +114,7 @@ export default function PaymentsListItem({
             payment.isVerificationPending && 'flex flex-col gap-3'
           )}
         >
-          {useAdmin ? (
+          {useEmployee ? (
             <div className="flex gap-2 w-full">
               <PaymentVerificationDialog
                 payment={payment}

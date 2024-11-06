@@ -8,6 +8,7 @@ import https from 'https';
 import fs from 'fs';
 import connectDB from './db/connection.js';
 import authRoutes from './routes/auth.js';
+import userRoutes from './routes/user.js';
 import paymentRoutes from './routes/payment.js';
 
 // import 'src/server/keys/privatekey.pem';
@@ -29,6 +30,7 @@ server.use(morgan('combined'));
 
 // Routes
 server.use('/api/auth', authRoutes);
+server.use('/api/users', userRoutes);
 server.use('/api/payments', paymentRoutes);
 
 server.get('/api/ben/dover', (req, res) => {

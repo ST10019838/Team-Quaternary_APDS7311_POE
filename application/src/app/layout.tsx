@@ -3,7 +3,8 @@ import localFont from 'next/font/local';
 import './globals.css';
 import Link from 'next/link';
 import Providers from './providers';
-import { Toaster } from '@/components/ui/toaster';
+import { Toaster } from '@/components/shadcn-ui/toaster';
+import { Toaster as SonnerToaster } from 'sonner';
 
 const geistSans = localFont({
   src: './fonts/GeistVF.woff',
@@ -36,6 +37,7 @@ export default function RootLayout({
           {children}
         </Providers>
         <Toaster />
+        <SonnerToaster richColors />
       </body>
     </html>
   );

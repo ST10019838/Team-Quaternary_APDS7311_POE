@@ -20,7 +20,7 @@ router.get('/pending', authMiddleware, async (req, res) => {
   try {
     const userLoggedIn = await User.findOne({ _id: req.user.id });
 
-    if (!userLoggedIn.isAdmin) {
+    if (!userLoggedIn.isAdmin && !userLoggedIn.isEmployee) {
       return res.status(403).json({ message: 'Insufficient permissions' });
     }
 
@@ -200,7 +200,7 @@ router.post('/verify/:id', authMiddleware, async (req, res) => {
 
     const userLoggedIn = await User.findOne({ _id: req.user.id });
 
-    if (!userLoggedIn.isAdmin) {
+    if (!userLoggedIn.isAdmin && !userLoggedIn.isEmployee) {
       return res.status(400).json({ message: 'Cannot verify the Payment' });
     }
 
@@ -232,7 +232,7 @@ router.post('/deny/:id', authMiddleware, async (req, res) => {
 
     const userLoggedIn = await User.findOne({ _id: req.user.id });
 
-    if (!userLoggedIn.isAdmin) {
+    if (!userLoggedIn.isAdmin && !userLoggedIn.isEmployee) {
       return res.status(400).json({ message: 'Cannot deny the Payment' });
     }
 

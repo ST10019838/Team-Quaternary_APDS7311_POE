@@ -3,7 +3,7 @@
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/shadcn-ui/button';
 
 import {
   Form,
@@ -12,8 +12,8 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
+} from '@/components/shadcn-ui/form';
+import { Input } from '@/components/shadcn-ui/input';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -68,7 +68,7 @@ export default function LoginPage() {
         setIsSubmitting(() => false);
 
         // localStorage.setItem('token', data.data.token);
-        router.push(data.isAdmin ? '/admin/payments' : '/payments');
+        router.push(data.isAdmin || data.isEmployee ? '/admin/payments-verification' : '/payments');
       } catch (err: any) {
         setIsSubmitting(() => false);
         if (err.response) {
@@ -156,14 +156,14 @@ export default function LoginPage() {
           </form>
         </Form>
 
-        <div className="text-center">
+        {/* <div className="text-center">
           <p className="text-gray-600">
             Don't have an account?{' '}
             <a href="/register" className="text-blue-600 hover:underline">
               Sign up
             </a>
           </p>
-        </div>
+        </div> */}
       </div>
     </div>
   );

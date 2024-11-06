@@ -12,49 +12,6 @@ const JWT_SECRET = process.env.JWT_SECRET;
 //   res.send('Hello Auth World');
 // });
 
-// register
-router.post('/register', bruteForce.prevent, async (req, res) => {
-  try {
-    const { fullname, username, idNumber, accountNumber, password } = req.body;
-
-    if (!fullname || !username || !idNumber || !accountNumber || !password) {
-      return res
-        .status(488)
-        .json({ message: 'Insufficient credentials to create a user' });
-    }
-
-    //check if the user already exisits
-    const existingUser = await User.findOne({
-      $or: [{ username }, { accountNumber }],
-    });
-
-    if (existingUser) {
-      return res
-        .status(488)
-        .json({ message: 'Username or account number already exists' });
-    }
-
-    //hash the password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    //create the new user
-    const newUser = new User({
-      username,
-      fullname,
-      idNumber,
-      accountNumber,
-      password: hashedPassword,
-    });
-    await newUser.save();
-
-    return res.status(201).json({ message: 'User created successfully' });
-  } catch (err) {
-    res
-      .status(500)
-      .json({ message: 'Internal Server error', error: err.message });
-  }
-});
-
 // login
 router.post('/login' /* , bruteForce.prevent */, async (req, res) => {
   try {
@@ -86,6 +43,7 @@ router.post('/login' /* , bruteForce.prevent */, async (req, res) => {
       accountNumber,
       idNumber: user.idNumber,
       isAdmin: user.isAdmin,
+      isEmployee: user.isEmployee,
       token,
     });
   } catch (err) {

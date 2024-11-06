@@ -7,8 +7,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Button } from './ui/button';
+} from '@/components/shadcn-ui/dropdown-menu';
+import { Button } from './shadcn-ui/button';
 import { CircleUserRound, LogOut, UserRound } from 'lucide-react';
 import { clearSession, getSession } from '@/lib/session';
 import { useState } from 'react';
