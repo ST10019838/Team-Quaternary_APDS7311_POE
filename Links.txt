@@ -10,5 +10,8 @@ Team Members:
 Personal Repository Link:
 https://github.com/ST10019838/Team-Quaternary_APDS7311_POE.git
 
-Part 2 Github Classroom Link:
+Part 2 GitHub Classroom Link:
 https://github.com/IIEWFL/apds7311-part-2-team-quaternary.git
+
+Part 3 GitHub Classroom Link:
+https://github.com/IIEWFL/apds7311-poe-team-quaternary

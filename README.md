@@ -12,6 +12,8 @@ Team Members:
 </br>
 NOTE:
 
+- The devops pipeline was set up on our main repository (the link can be found under the Links.txt file) and image proof can be found in the documentation folder.
+
 - Check out the "How to Run" section and for the scripts to properly run the application
 
 - If the following error occurs when attempting to log in, restart the api:
@@ -22,13 +24,28 @@ Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the cli
 
 (I tried finding this bug, but everything looks correct and it pops up randomly which makes it difficult to catch)
 
-- Don't forget to add your custom environment variables if you aren't able to connect to the online mongo Altas we have set up. Then don't forget to add an admin user by looking at the User-Mongoose.js file to see how to insert an Admin / Employee as the registration only creates users! (Message Damian or Christiaan to add IP address to Atlas if need be)
+- Don't forget to add your custom environment variables if you aren't able to connect to the online mongo Altas we have set up. Then don't forget to add an admin user by looking at the User-Mongoose.js file to see how to insert an Admin that can register other users! (Contact Damian or Christiaan to add IP address to Atlas if need be)
 
 </br>
 
-## Admin Credentials (if using our Atlas)
+## Credentials (if using our Atlas)
 
+**_Admin Account:_**
 - Username: Admin
+- Account Number: 100000000
+- Password: P1
+
+</br>
+
+**_Employee Account:_**
+- Username: Employee
+- Account Number: 100000001
+- Password: P1
+
+</br>
+
+ **_User Account:_**
+- Username: User
 - Account Number: 100000002
 - Password: P1
 
@@ -58,6 +75,12 @@ The following tutorials can found be under the Tutorials folder:
 **_Part 2:_**
 
 - Team_Quaternary_APDS7311_Part2_Tutorial
+
+</br>
+
+**_Part 3:_**
+
+- Team_Quaternary_APDS7311_POE_Tutorial
 
 </br>
 </br>

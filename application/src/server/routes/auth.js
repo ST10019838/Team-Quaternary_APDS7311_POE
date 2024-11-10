@@ -13,44 +13,47 @@ const JWT_SECRET = process.env.JWT_SECRET;
 // });
 
 // login
-router.post('/login' /* , bruteForce.prevent */, async (req, res) => {
-  try {
-    const { username, accountNumber, password } = req.body;
-    //find the user by the username
-    // const user = await User.findOne({ username });
+router.post(
+  '/login',
+  /* bruteForce.prevent, */ async (req, res) => {
+    try {
+      const { username, accountNumber, password } = req.body;
+      //find the user by the username
+      // const user = await User.findOne({ username });
 
-    const user = await User.findOne({
-      $and: [{ username }, { accountNumber }],
-    });
+      const user = await User.findOne({
+        $and: [{ username }, { accountNumber }],
+      });
 
-    if (!user) {
-      res.status(404).json({ message: 'User not found' });
+      if (!user) {
+        res.status(404).json({ message: 'User not found' });
+      }
+
+      //check the password
+      const isMatch = await bcrypt.compare(password, user.password);
+
+      if (!isMatch) {
+        return res.status(408).json({ message: 'Invalid credentials' });
+      }
+
+      //Create a JWT token
+      const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: '1h' });
+
+      // res.json({ token });
+      res.json({
+        username,
+        accountNumber,
+        idNumber: user.idNumber,
+        isAdmin: user.isAdmin,
+        isEmployee: user.isEmployee,
+        token,
+      });
+    } catch (err) {
+      res
+        .status(500)
+        .json({ message: 'Internal Server error', error: err.message });
     }
-
-    //check the password
-    const isMatch = await bcrypt.compare(password, user.password);
-
-    if (!isMatch) {
-      return res.status(408).json({ message: 'Invalid credentials' });
-    }
-
-    //Create a JWT token
-    const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: '1h' });
-
-    // res.json({ token });
-    res.json({
-      username,
-      accountNumber,
-      idNumber: user.idNumber,
-      isAdmin: user.isAdmin,
-      isEmployee: user.isEmployee,
-      token,
-    });
-  } catch (err) {
-    res
-      .status(500)
-      .json({ message: 'Internal Server error', error: err.message });
   }
-});
+);
 
 export default router;
