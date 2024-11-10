@@ -109,6 +109,9 @@ export default function UsersTable() {
         const [formIsOpen, setFormIsOpen] = useState(false);
         const [deletionDialogIsOpen, setDeletionDialogIsOpen] = useState(false);
 
+        // Admin information cannot be modified
+        if (row.original.isAdmin) return;
+
         return (
           <div className="flex items-center justify-center">
             <DropdownMenu>

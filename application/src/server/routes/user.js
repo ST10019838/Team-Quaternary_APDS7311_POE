@@ -54,14 +54,7 @@ router.post(
         isEmployee,
       } = req.body;
 
-      if (
-        !fullname ||
-        !username ||
-        !idNumber ||
-        !accountNumber ||
-        !password ||
-        !isEmployee
-      ) {
+      if (!fullname || !username || !idNumber || !accountNumber || !password) {
         return res
           .status(488)
           .json({ message: 'Insufficient credentials to create a user' });
@@ -88,7 +81,7 @@ router.post(
         idNumber,
         accountNumber,
         password: hashedPassword,
-        isEmployee,
+        isEmployee: isEmployee == null ? false : isEmployee,
       });
       await newUser.save();
 
