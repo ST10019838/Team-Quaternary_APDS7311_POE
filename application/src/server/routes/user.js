@@ -45,10 +45,23 @@ router.post(
         return res.status(403).json({ message: 'Insufficient permissions' });
       }
 
-      const { fullname, username, idNumber, accountNumber, password } =
-        req.body;
+      const {
+        fullname,
+        username,
+        idNumber,
+        accountNumber,
+        password,
+        isEmployee,
+      } = req.body;
 
-      if (!fullname || !username || !idNumber || !accountNumber || !password) {
+      if (
+        !fullname ||
+        !username ||
+        !idNumber ||
+        !accountNumber ||
+        !password ||
+        !isEmployee
+      ) {
         return res
           .status(488)
           .json({ message: 'Insufficient credentials to create a user' });
@@ -75,6 +88,7 @@ router.post(
         idNumber,
         accountNumber,
         password: hashedPassword,
+        isEmployee,
       });
       await newUser.save();
 
