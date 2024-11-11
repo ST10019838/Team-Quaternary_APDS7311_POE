@@ -129,18 +129,23 @@ _or_
 
 1. Navigate to the "application" folder
 
-2. Then start the front by running the following command in the terminal:
+2. Open a terminal in the project location
 
-```
- npm run dev-https
-```
-
-3. Then start the backend by running the following command in the terminal:
+3. Start the backend by running the following command in the terminal:
 
 ```
  npm run dev-server
 ```
 
-4. Navigate to "https://localhost:3000" to view the front end of the application
+4. Open another terminal.
 
-5. Enjoy!
+5. Start the frontend by running the following command in the terminal:
+
+```
+ npm run dev-https
+```
+
+
+6. Navigate to "https://localhost:3000" to view the front end of the application
+
+7. Enjoy!
